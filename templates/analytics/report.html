@@ -1,0 +1,82 @@
+{% extends "base/base.html" %}
+
+{% block content %}
+<div class="animate-fade-in space-y-8">
+    <div class="flex items-center justify-between">
+        <div>
+            <h1 class="text-4xl font-black text-white tracking-tight">Performance Analytics</h1>
+            <p class="text-slate-500 font-medium">Monthly discipline integrity and data correlation.</p>
+        </div>
+        <div class="px-6 py-3 bg-indigo-500/10 text-indigo-400 text-xl font-black rounded-3xl border border-indigo-500/30">
+            Avg: {{ avg_score|floatformat:1 }}%
+        </div>
+    </div>
+
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mt-10">
+        <div class="glass-card p-6 border-l-4 border-indigo-500 bg-slate-900 shadow-xl">
+            <h3 class="text-xs font-black text-slate-500 uppercase tracking-widest mb-2">Total Logged Days</h3>
+            <p class="text-4xl font-black text-white">{{ all_logs.count }}</p>
+            <p class="text-[10px] text-slate-500 mt-2 font-bold uppercase tracking-widest">Historical Volume</p>
+        </div>
+        <div class="glass-card p-6 border-l-4 border-emerald-500 bg-slate-900 shadow-xl">
+            <h3 class="text-xs font-black text-slate-500 uppercase tracking-widest mb-2">Highest Consistency</h3>
+            <p class="text-4xl font-black text-emerald-500">100.0</p>
+            <p class="text-[10px] text-emerald-500 mt-2 font-bold uppercase tracking-widest">Ideal Discipline</p>
+        </div>
+    </div>
+
+    <!-- Data Insights Table -->
+    <div class="glass-card bg-slate-900 border border-slate-800 overflow-hidden shadow-2xl mt-10">
+        <div class="p-6 border-b border-slate-800 flex items-center justify-between">
+            <h3 class="text-xl font-black text-white">Execution Stability History</h3>
+            <span class="text-xs font-bold text-slate-500 uppercase tracking-widest">{{ all_logs.count }} Data Points</span>
+        </div>
+        <table class="w-full text-left border-collapse">
+            <thead>
+                <tr class="bg-indigo-500/10 text-[10px] font-black uppercase tracking-widest text-indigo-400">
+                    <th class="p-6">Date</th>
+                    <th class="p-6">Goals Ratio</th>
+                    <th class="p-6">Attendance</th>
+                    <th class="p-6 text-right">Daily Score</th>
+                </tr>
+            </thead>
+            <tbody class="text-sm text-slate-300">
+                {% for log in all_logs %}
+                <tr class="border-t border-slate-800 hover:bg-slate-800/10 transition-colors group">
+                    <td class="p-6">
+                        <h4 class="font-bold text-white">{{ log.date|date:"D, M d, Y" }}</h4>
+                        <p class="text-[10px] text-slate-500">Streak: {{ log.streak_count }} Days</p>
+                    </td>
+                    <td class="p-6">
+                        <div class="flex items-center space-x-3">
+                            <div class="flex-1 w-24 bg-slate-800 h-2 rounded-full overflow-hidden">
+                                <div class="bg-indigo-500 h-full" style="width: {% if log.total_goals > 0 %}{{ log.goals_completed|add:0|divisibleby:log.total_goals|yesno:'100,0' }}{% else %}100{% endif %}%"></div>
+                            </div>
+                            <span class="text-xs font-bold text-slate-500">{{ log.goals_completed }}/{{ log.total_goals }}</span>
+                        </div>
+                    </td>
+                    <td class="p-6">
+                        <p class="text-xs font-bold text-slate-300">{{ log.attendance_marked }} Sessions</p>
+                        <p class="text-[10px] text-slate-500 italic">Target: {{ log.total_lectures }} Sessions</p>
+                    </td>
+                    <td class="p-6 text-right">
+                        {% if log.is_locked %}
+                            <span class="mr-3 text-red-500 text-[8px] uppercase font-black tracking-widest border border-red-500/30 px-2 py-0.5 rounded-full bg-red-500/10">Locked</span>
+                        {% endif %}
+                        <span class="text-2xl font-black {% if log.total_score > 80 %}text-indigo-500{% elif log.total_score > 60 %}text-amber-500{% else %}text-red-500{% endif %}">
+                            {{ log.total_score|floatformat:1 }}%
+                        </span>
+                    </td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="4" class="p-20 text-center text-slate-500">
+                        Insufficient data points for analytics.
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}

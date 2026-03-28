@@ -1,9 +1,16 @@
-from django.shortcuts import redirect, render
-from django.views.generic.edit import CreateView
+from django.views.generic import TemplateView, CreateView, ListView
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.utils import timezone
 from .models import AttendanceRecord
 from django import forms
+
+class AttendanceListView(LoginRequiredMixin, ListView):
+    model = AttendanceRecord
+    template_name = 'attendance/list.html'
+    context_object_name = 'attendance_list'
+
+    def get_queryset(self):
+        return AttendanceRecord.objects.filter(user=self.request.user).order_by('-timestamp')
 
 class AttendanceForm(forms.ModelForm):
     class Meta:

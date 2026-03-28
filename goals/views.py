@@ -1,12 +1,16 @@
-from django.shortcuts import get_object_or_404, redirect
-from django.views import View
-from django.views.generic.edit import CreateView
-from django.contrib.auth.mixins import LoginRequiredMixin
+from django.views.generic import TemplateView, ListView
 from django.utils import timezone
 from .models import Goal, GoalLog
-from django import forms
 
-class GoalForm(forms.ModelForm):
+class GoalListView(LoginRequiredMixin, ListView):
+    model = Goal
+    template_name = 'goals/list.html'
+    context_object_name = 'goals'
+
+    def get_queryset(self):
+        return Goal.objects.filter(user=self.request.user)
+
+class GoalCreateView(LoginRequiredMixin, CreateView):
     class Meta:
         model = Goal
         fields = ['title', 'description', 'category']

@@ -35,15 +35,15 @@
                     <i class="fa-solid fa-gauge-high"></i>
                     <span class="font-medium">Dashboard</span>
                 </a>
-                <a href="#" class="flex items-center space-x-3 p-3 rounded-xl transition-all hover:bg-slate-800 text-slate-400">
+                <a href="{% url 'goal_list' %}" class="flex items-center space-x-3 p-3 rounded-xl transition-all hover:bg-slate-800 {% if '/goals/' in request.path %} bg-slate-800 border-l-4 border-indigo-500 text-white {% else %} text-slate-400 {% endif %}">
                     <i class="fa-solid fa-list-check"></i>
                     <span class="font-medium">Goals</span>
                 </a>
-                <a href="#" class="flex items-center space-x-3 p-3 rounded-xl transition-all hover:bg-slate-800 text-slate-400">
+                <a href="{% url 'attendance_list' %}" class="flex items-center space-x-3 p-3 rounded-xl transition-all hover:bg-slate-800 {% if '/attendance/' in request.path %} bg-slate-800 border-l-4 border-indigo-500 text-white {% else %} text-slate-400 {% endif %}">
                     <i class="fa-solid fa-user-check"></i>
                     <span class="font-medium">Attendance</span>
                 </a>
-                <a href="#" class="flex items-center space-x-3 p-3 rounded-xl transition-all hover:bg-slate-800 text-slate-400">
+                <a href="{% url 'report' %}" class="flex items-center space-x-3 p-3 rounded-xl transition-all hover:bg-slate-800 {% if '/report/' in request.path %} bg-slate-800 border-l-4 border-indigo-500 text-white {% else %} text-slate-400 {% endif %}">
                     <i class="fa-solid fa-chart-line"></i>
                     <span class="font-medium">Analytics</span>
                 </a>

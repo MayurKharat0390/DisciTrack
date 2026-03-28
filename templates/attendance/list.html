@@ -1,0 +1,83 @@
+{% extends "base/base.html" %}
+
+{% block content %}
+<div class="animate-fade-in space-y-8">
+    <div class="flex items-center justify-between">
+        <div>
+            <h1 class="text-4xl font-black text-white tracking-tight">Attendance Log</h1>
+            <p class="text-slate-500 font-medium">Tracking historical session attendance and credibility.</p>
+        </div>
+        <a href="{% url 'attendance_mark' %}" class="btn-premium flex items-center space-x-2">
+            <i class="fa-solid fa-camera"></i>
+            <span>Submit New Proof</span>
+        </a>
+    </div>
+
+    <div class="glass-card bg-slate-900 border border-slate-800 overflow-hidden shadow-2xl mt-10">
+        <table class="w-full text-left border-collapse">
+            <thead>
+                <tr class="bg-indigo-500/10 text-[10px] font-black uppercase tracking-widest text-indigo-400">
+                    <th class="p-6">Session / Lecture</th>
+                    <th class="p-6">Date & Time</th>
+                    <th class="p-6">Status</th>
+                    <th class="p-6 text-right">Credibility</th>
+                </tr>
+            </thead>
+            <tbody class="text-sm text-slate-300">
+                {% for att in attendance_list %}
+                <tr class="border-t border-slate-800 hover:bg-slate-800/10 transition-colors group">
+                    <td class="p-6">
+                        <div class="flex items-center space-x-4">
+                            <div class="w-10 h-10 rounded-xl bg-slate-800 flex items-center justify-center text-slate-500 group-hover:bg-indigo-500 group-hover:text-white transition-all">
+                                <i class="fa-solid fa-building-columns"></i>
+                            </div>
+                            <div>
+                                <h4 class="font-bold text-white">{{ att.lecture_name }}</h4>
+                                <p class="text-[10px] text-slate-500 line-clamp-1">{{ att.notes|default:"No notes provided." }}</p>
+                            </div>
+                        </div>
+                    </td>
+                    <td class="p-6">
+                        <p class="font-bold text-slate-300">{{ att.date|date:"M d, Y" }}</p>
+                        <p class="text-[10px] text-slate-500">{{ att.timestamp|time:"H:i" }} Mark</p>
+                    </td>
+                    <td class="p-6">
+                        <div class="flex items-center space-x-2">
+                            {% if att.is_late %}
+                                <span class="bg-red-500/10 text-red-500 px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-tighter shadow-sm border border-red-500/20">Late</span>
+                            {% else %}
+                                <span class="bg-emerald-500/10 text-emerald-500 px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-tighter shadow-sm border border-emerald-500/20">On Time</span>
+                            {% endif %}
+                            
+                            {% if att.proof_image %}
+                                <div class="w-6 h-6 rounded-full bg-emerald-500/20 text-emerald-400 flex items-center justify-center text-[8px]" title="Proof Attached">
+                                    <i class="fa-solid fa-camera"></i>
+                                </div>
+                            {% else %}
+                                <div class="w-6 h-6 rounded-full bg-red-500/20 text-red-500 flex items-center justify-center text-[8px]" title="No Proof">
+                                    <i class="fa-solid fa-camera-slash"></i>
+                                </div>
+                            {% endif %}
+                        </div>
+                    </td>
+                    <td class="p-6 text-right">
+                        <span class="text-2xl font-black {% if att.credibility_score > 7 %}text-emerald-500{% elif att.credibility_score > 4 %}text-amber-500{% else %}text-red-500{% endif %}">
+                            {{ att.credibility_score|floatformat:1 }}
+                        </span>
+                        <span class="text-[10px] text-slate-500 block">/ 10.0</span>
+                    </td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="4" class="p-20 text-center">
+                        <i class="fa-solid fa-layer-group text-5xl text-slate-800 mb-4"></i>
+                        <p class="text-slate-500 font-medium">No attendance logs available.</p>
+                        <a href="{% url 'attendance_mark' %}" class="btn-premium mt-6 inline-block">Submit First Proof</a>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}

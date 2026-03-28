@@ -1,6 +1,4 @@
-from django.shortcuts import render
-from django.contrib.auth.mixins import LoginRequiredMixin
-from django.views.generic import TemplateView
+from django.views.generic import TemplateView, ListView
 from django.utils import timezone
 from .models import DailyLog
 from goals.models import Goal, GoalLog
@@ -8,6 +6,18 @@ from attendance.models import AttendanceRecord
 from accounts.models import UserProfile
 from datetime import timedelta
 from core.utils import sync_daily_logs
+
+class AnalyticsReportView(LoginRequiredMixin, TemplateView):
+    template_name = 'analytics/report.html'
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        user = self.request.user
+        logs = DailyLog.objects.filter(user=user).order_by('-date')
+        
+        context['all_logs'] = logs
+        context['avg_score'] = sum(l.total_score for l in logs) / logs.count() if logs.exists() else 0
+        return context
 
 class DashboardView(LoginRequiredMixin, TemplateView):
     template_name = 'analytics/dashboard.html'
