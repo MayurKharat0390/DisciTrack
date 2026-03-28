@@ -6,21 +6,53 @@
     <div class="glass-card p-10 bg-slate-900 shadow-2xl">
         <div class="flex items-center space-x-6 mb-12">
             <div class="w-16 h-16 bg-indigo-500/20 rounded-2xl flex items-center justify-center text-indigo-400 border border-indigo-500/30">
-                <i class="fa-solid fa-plus text-2xl"></i>
+                <i class="fa-solid fa-fire text-2xl"></i>
             </div>
             <div>
-                <h1 class="text-4xl font-black text-white tracking-tight">Create Goal Template</h1>
-                <p class="text-slate-500 font-medium">Define what you want to achieve daily.</p>
+                <h1 class="text-4xl font-black text-white tracking-tight">Mission Config</h1>
+                <p class="text-slate-500 font-medium">Define your daily routines or specific today tasks.</p>
             </div>
         </div>
 
         <form method="post" class="space-y-6">
             {% csrf_token %}
-            {{ form|crispy }}
+            
+            <div class="space-y-6">
+                <!-- Core Info -->
+                <div class="p-6 bg-slate-800/30 rounded-3xl border border-slate-700/50 space-y-4">
+                    {{ form.title|as_crispy_field }}
+                    {{ form.description|as_crispy_field }}
+                    {{ form.category|as_crispy_field }}
+                </div>
+
+                <!-- Strategic Marking System -->
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div class="p-6 bg-amber-500/5 border border-amber-500/20 rounded-3xl flex items-start space-x-4">
+                        <div class="pt-1">
+                            {{ form.is_daily_grind }}
+                        </div>
+                        <div>
+                            <label class="text-white font-black text-sm uppercase block">Daily Grind</label>
+                            <p class="text-[10px] text-amber-500/70 font-bold max-w-[140px]">Recurring daily routine (Gym, Coding, Reading).</p>
+                        </div>
+                    </div>
+
+                    <div class="p-6 bg-indigo-500/5 border border-indigo-500/20 rounded-3xl flex items-start space-x-4">
+                        <div class="pt-1">
+                            {{ form.is_one_time }}
+                        </div>
+                        <div>
+                            <label class="text-white font-black text-sm uppercase block">Today Task</label>
+                            <p class="text-[10px] text-indigo-500/70 font-bold max-w-[140px]">One-off task for today only. Disappears once completed.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
             <div class="pt-8">
                 <button type="submit" class="btn-premium w-full flex items-center justify-center space-x-3 py-4 text-lg">
                     <i class="fa-solid fa-play"></i>
-                    <span>Activate Goal</span>
+                    <span>Activate Mission</span>
                 </button>
                 <div class="text-center mt-6">
                     <a href="{% url 'dashboard' %}" class="text-slate-500 font-bold hover:text-slate-300 transition-colors uppercase tracking-widest text-xs">Cancel</a>
@@ -30,4 +62,33 @@
     </div>
 </div>
 
+<style>
+    /* Styling checkboxes */
+    input[type="checkbox"] {
+        width: 1.5rem;
+        height: 1.5rem;
+        background-color: #1e293b;
+        border: 2px solid #334155;
+        border-radius: 0.5rem;
+        appearance: none;
+        cursor: pointer;
+        transition: all 0.2s;
+    }
+    input[type="checkbox"]:checked {
+        background-color: #6366f1;
+        border-color: #6366f1;
+        background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='white'%3E%3Cpath d='M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41L9 16.17z'/%3E%3C/svg%3E");
+        background-size: cover;
+    }
+    .asteriskField { display: none; }
+</style>
+
+<script>
+    // Logic: If one is checked, uncheck the other (they are mutually exclusive in principle for this UI)
+    const grind = document.querySelector('input[name="is_daily_grind"]');
+    const oneTime = document.querySelector('input[name="is_one_time"]');
+
+    grind.addEventListener('change', () => { if (grind.checked) oneTime.checked = false; });
+    oneTime.addEventListener('change', () => { if (oneTime.checked) grind.checked = false; });
+</script>
 {% endblock %}

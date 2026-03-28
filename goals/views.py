@@ -16,12 +16,11 @@ class GoalListView(LoginRequiredMixin, ListView):
 
 class GoalCreateView(LoginRequiredMixin, CreateView):
     model = Goal
-    fields = ['title', 'description', 'category']
+    fields = ['title', 'description', 'category', 'is_daily_grind', 'is_one_time']
     template_name = 'goals/create.html'
-    success_url = '/analytics/dashboard/' # Explicit target
+    success_url = '/' # Go back to dashboard
 
     def form_valid(self, form):
-        form.status = 'active'
         form.instance.user = self.request.user
         return super().form_valid(form)
 
@@ -30,16 +29,20 @@ class ToggleGoalLogView(LoginRequiredMixin, View):
         goal = get_object_or_404(Goal, id=goal_id, user=request.user)
         today = timezone.localtime(timezone.now()).date()
         
-        # Check if the goal log exists for today
+        # 1. Toggle or Create Log
         log, _ = GoalLog.objects.get_or_create(goal=goal, date=today)
-        
-        # Simple toggle
         log.is_completed = not log.is_completed
         log.save()
         
-        # Update daily score
+        # 2. Daily Score Sync
         from analytics.models import DailyLog
         daily, _ = DailyLog.objects.get_or_create(user=request.user, date=today)
         daily.update_score()
         
+        # 3. One-time Task Persistence Logic
+        if goal.is_one_time and log.is_completed:
+            # If a today-only task is done, we retire the template
+            goal.is_active = False
+            goal.save()
+            
         return redirect('dashboard')

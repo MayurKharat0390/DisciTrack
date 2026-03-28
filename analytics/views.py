@@ -48,22 +48,18 @@ class DashboardView(LoginRequiredMixin, TemplateView):
         # 3. Attendance records
         attendance = AttendanceRecord.objects.filter(user=user, date=today)
         daily_log.attendance_marked = attendance.count()
-        daily_log.total_lectures = 4  # Should be configurable
+        # Calculate Scored Penalties (REMOVED based on user request)
+        # We no longer subtract proof or skip penalties from total_score
         
-        # Calculate Scored Penalties
-        # NO LATE PENALTY AS PER USER REQUEST
-        proof_penalty = sum(6 for att in attendance if att.is_attended and not att.proof_image)
-        skip_penalty = sum(10 for att in attendance if not att.is_attended)
+        # 1. Goal Score (Max 50)
+        goal_score = (daily_log.goals_completed / daily_log.total_goals * 50) if daily_log.total_goals > 0 else 0
         
-        # Scoring calculation (0-100)
-        goal_score = (daily_log.goals_completed / daily_log.total_goals * 50) if daily_log.total_goals > 0 else 50
-        
-        # Attendance Logic: Total Lectures is a base denominator
-        # Every attended lecture contributes, every skipped lecture subtracts
+        # 2. Attendance Contribution (Max 50)
         actual_attendance_count = sum(1 for att in attendance if att.is_attended)
-        attendance_contribution = (actual_attendance_count / daily_log.total_lectures * 50) if daily_log.total_lectures > 0 else 50
+        attendance_contribution = (actual_attendance_count / daily_log.total_lectures * 50) if daily_log.total_lectures > 0 else 0
 
-        daily_log.total_score = max(0, min(100, goal_score + attendance_contribution - proof_penalty - skip_penalty))
+        # Total is now a pure sum of achievement
+        daily_log.total_score = max(0, min(100, goal_score + attendance_contribution))
         
         # 4. Profile and Streak
         profile = user.profile

@@ -27,15 +27,6 @@ class AttendanceRecord(models.Model):
         return f"{self.user.username} - {self.lecture_name} ({self.date})"
 
     def calculate_credibility(self):
-        # Base score is 10.0
-        score = 10.0
-        
-        # Penalties
-        if not self.is_attended:
-            score -= 8.0 # High penalty for skipping
-        else:
-            if not self.proof_image:
-                score -= 4.0 # Penalty for missing proof
-                
-        self.credibility_score = max(0, score)
+        # NEW SIMPLIFIED LOGIC: 10 if attended, 0 if skipped
+        self.credibility_score = 10.0 if self.is_attended else 0.0
         self.save()

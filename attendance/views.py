@@ -1,9 +1,10 @@
+from django.shortcuts import get_object_or_404, redirect
+from django.views import View
 from django.views.generic import TemplateView, CreateView, ListView
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.utils import timezone
 from .models import AttendanceRecord
 from django import forms
-from django.shortcuts import redirect
 
 class AttendanceListView(LoginRequiredMixin, ListView):
     model = AttendanceRecord
@@ -23,6 +24,7 @@ class AttendanceForm(forms.ModelForm):
         }
 
 class AttendanceMarkView(LoginRequiredMixin, CreateView):
+    # This view handles both Creating a new record or UPDATING an existing one for the same day
     model = AttendanceRecord
     form_class = AttendanceForm
     template_name = 'attendance/mark.html'
@@ -66,3 +68,16 @@ class AttendanceMarkView(LoginRequiredMixin, CreateView):
             daily.update_score()
             
             return response
+
+class AttendanceDeleteView(LoginRequiredMixin, View):
+    def post(self, request, pk):
+        record = get_object_or_404(AttendanceRecord, pk=pk, user=request.user)
+        date = record.date
+        record.delete()
+        
+        # Recalculate Score
+        from analytics.models import DailyLog
+        daily, _ = DailyLog.objects.get_or_create(user=request.user, date=date)
+        daily.update_score()
+        
+        return redirect('attendance_list')
