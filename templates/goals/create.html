@@ -4,33 +4,30 @@
 {% block content %}
 <div class="animate-fade-in max-w-2xl mx-auto mt-10">
     <div class="glass-card p-10 bg-slate-900 shadow-2xl">
-        <div class="flex items-center space-x-4 mb-8">
-            <div class="p-3 bg-indigo-500/20 rounded-2xl text-indigo-400">
-                <i class="fa-solid fa-plus-circle text-3xl"></i>
+        <div class="flex items-center space-x-6 mb-12">
+            <div class="w-16 h-16 bg-indigo-500/20 rounded-2xl flex items-center justify-center text-indigo-400 border border-indigo-500/30">
+                <i class="fa-solid fa-plus text-2xl"></i>
             </div>
             <div>
-                <h1 class="text-3xl font-extrabold text-white tracking-tight">Create Goal Template</h1>
-                <p class="text-slate-400">Define what you want to achieve daily.</p>
+                <h1 class="text-4xl font-black text-white tracking-tight">Create Goal Template</h1>
+                <p class="text-slate-500 font-medium">Define what you want to achieve daily.</p>
             </div>
         </div>
 
         <form method="post" class="space-y-6">
             {% csrf_token %}
             {{ form|crispy }}
-            <div class="pt-4">
-                <button type="submit" class="btn-premium w-full flex items-center justify-center space-x-2">
+            <div class="pt-8">
+                <button type="submit" class="btn-premium w-full flex items-center justify-center space-x-3 py-4 text-lg">
                     <i class="fa-solid fa-play"></i>
                     <span>Activate Goal</span>
                 </button>
-                <a href="{% url 'dashboard' %}" class="block text-center text-slate-500 mt-4 hover:text-slate-300 transition-colors">Cancel</a>
+                <div class="text-center mt-6">
+                    <a href="{% url 'dashboard' %}" class="text-slate-500 font-bold hover:text-slate-300 transition-colors uppercase tracking-widest text-xs">Cancel</a>
+                </div>
             </div>
         </form>
     </div>
 </div>
 
-<style>
-    .form-group label { color: #94a3b8; font-weight: 500; font-size: 0.875rem; margin-bottom: 0.5rem; }
-    .form-control, .textarea, .select { background-color: #0f172a !important; border-color: #334155 !important; color: white !important; border-radius: 0.75rem !important; }
-    .form-control:focus { border-color: #6366f1 !important; box-shadow: 0 0 0 2px rgba(99, 102, 241, 0.2) !important; }
-</style>
 {% endblock %}
