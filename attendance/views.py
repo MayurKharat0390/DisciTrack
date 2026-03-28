@@ -3,6 +3,7 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 from django.utils import timezone
 from .models import AttendanceRecord
 from django import forms
+from django.shortcuts import redirect
 
 class AttendanceListView(LoginRequiredMixin, ListView):
     model = AttendanceRecord
@@ -28,15 +29,40 @@ class AttendanceMarkView(LoginRequiredMixin, CreateView):
     success_url = '/' # Dashboard
 
     def form_valid(self, form):
-        form.instance.user = self.request.user
-        form.instance.date = timezone.localtime(timezone.now()).date()
+        user = self.request.user
+        date = timezone.localtime(timezone.now()).date()
+        lecture_name = form.cleaned_data['lecture_name']
         
-        response = super().form_valid(form)
-        form.instance.calculate_credibility()
+        # Check if record already exists for this user/lecture/date
+        existing_record = AttendanceRecord.objects.filter(user=user, lecture_name=lecture_name, date=date).first()
         
-        # Update DailyLog score
-        from analytics.models import DailyLog
-        daily, _ = DailyLog.objects.get_or_create(user=self.request.user, date=form.instance.date)
-        daily.update_score()
-        
-        return response
+        if existing_record:
+            # Update the existing record instead of creating a new one
+            existing_record.is_attended = form.cleaned_data['is_attended']
+            existing_record.reason_for_absence = form.cleaned_data['reason_for_absence']
+            existing_record.notes = form.cleaned_data['notes']
+            if form.cleaned_data['proof_image']:
+                existing_record.proof_image = form.cleaned_data['proof_image']
+            existing_record.timestamp = timezone.now() # Update marking time
+            existing_record.save()
+            existing_record.calculate_credibility()
+            
+            # Update DailyLog score
+            from analytics.models import DailyLog
+            daily, _ = DailyLog.objects.get_or_create(user=user, date=date)
+            daily.update_score()
+            
+            return redirect(self.success_url)
+        else:
+            # Create new record
+            form.instance.user = user
+            form.instance.date = date
+            response = super().form_valid(form)
+            form.instance.calculate_credibility()
+            
+            # Update DailyLog score
+            from analytics.models import DailyLog
+            daily, _ = DailyLog.objects.get_or_create(user=user, date=date)
+            daily.update_score()
+            
+            return response
