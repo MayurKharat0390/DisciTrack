@@ -51,14 +51,19 @@ class DashboardView(LoginRequiredMixin, TemplateView):
         daily_log.total_lectures = 4  # Should be configurable
         
         # Calculate Scored Penalties
-        late_penalty = sum(2 for att in attendance if att.is_late)
-        proof_penalty = sum(5 for att in attendance if not att.proof_image)
+        # NO LATE PENALTY AS PER USER REQUEST
+        proof_penalty = sum(6 for att in attendance if att.is_attended and not att.proof_image)
+        skip_penalty = sum(10 for att in attendance if not att.is_attended)
         
         # Scoring calculation (0-100)
         goal_score = (daily_log.goals_completed / daily_log.total_goals * 50) if daily_log.total_goals > 0 else 50
-        attendance_score = (daily_log.attendance_marked / daily_log.total_lectures * 50) if daily_log.total_lectures > 0 else 50
         
-        daily_log.total_score = max(0, min(100, goal_score + attendance_score - late_penalty - proof_penalty))
+        # Attendance Logic: Total Lectures is a base denominator
+        # Every attended lecture contributes, every skipped lecture subtracts
+        actual_attendance_count = sum(1 for att in attendance if att.is_attended)
+        attendance_contribution = (actual_attendance_count / daily_log.total_lectures * 50) if daily_log.total_lectures > 0 else 50
+
+        daily_log.total_score = max(0, min(100, goal_score + attendance_contribution - proof_penalty - skip_penalty))
         
         # 4. Profile and Streak
         profile = user.profile

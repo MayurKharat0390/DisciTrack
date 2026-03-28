@@ -5,22 +5,54 @@
 <div class="animate-fade-in max-w-2xl mx-auto mt-10">
     <div class="glass-card p-10 bg-slate-900 shadow-2xl">
         <div class="flex items-center space-x-6 mb-12">
-            <div class="w-16 h-16 bg-emerald-500/20 rounded-2xl flex items-center justify-center text-emerald-400 border border-emerald-500/30">
-                <i class="fa-solid fa-camera text-2xl"></i>
+            <div class="w-16 h-16 bg-indigo-500/20 rounded-2xl flex items-center justify-center text-indigo-400 border border-indigo-500/30">
+                <i class="fa-solid fa-graduation-cap text-2xl"></i>
             </div>
             <div>
-                <h1 class="text-4xl font-black text-white tracking-tight">Proof Submission</h1>
-                <p class="text-slate-500 font-medium">Late marking will be flagged automatically.</p>
+                <h1 class="text-4xl font-black text-white tracking-tight">Session Check-in</h1>
+                <p class="text-slate-500 font-medium">Log your attendance or explain your absence.</p>
             </div>
         </div>
 
-        <form method="post" enctype="multipart/form-data" class="space-y-8">
+        <form method="post" enctype="multipart/form-data" class="space-y-8" id="attendanceForm">
             {% csrf_token %}
-            {{ form|crispy }}
+            
+            <div class="space-y-6">
+                <!-- Lecture Name -->
+                <div class="space-y-2">
+                    <label class="text-xs font-black text-slate-500 uppercase tracking-widest">Lecture / Subject</label>
+                    {{ form.lecture_name|as_crispy_field }}
+                </div>
+
+                <!-- Attended Choice -->
+                <div class="flex items-center space-x-4 p-4 bg-slate-800/50 rounded-2xl border border-slate-700">
+                    <label class="flex-1 text-sm font-bold text-white">Did you attend this lecture?</label>
+                    {{ form.is_attended }}
+                </div>
+
+                <!-- Absence Reason (Conditional) -->
+                <div id="absence_reason_wrapper" class="hidden animate-fade-in space-y-2">
+                    <label class="text-xs font-black text-red-400 uppercase tracking-widest">Reason for Absence</label>
+                    {{ form.reason_for_absence|as_crispy_field }}
+                </div>
+
+                <!-- Proof Image -->
+                <div id="proof_wrapper" class="space-y-2">
+                    <label class="text-xs font-black text-emerald-400 uppercase tracking-widest">Upload Proof (Photo/Screenshot)</label>
+                    {{ form.proof_image|as_crispy_field }}
+                </div>
+
+                <!-- Notes -->
+                <div class="space-y-2">
+                    <label class="text-xs font-black text-slate-500 uppercase tracking-widest">Additional Notes</label>
+                    {{ form.notes|as_crispy_field }}
+                </div>
+            </div>
+
             <div class="pt-8">
                 <button type="submit" class="btn-premium w-full flex items-center justify-center space-x-3 py-4 text-lg">
                     <i class="fa-solid fa-cloud-arrow-up"></i>
-                    <span>Mark as Attended</span>
+                    <span>Submit Attendance Status</span>
                 </button>
                 <div class="text-center mt-6">
                     <a href="{% url 'dashboard' %}" class="text-slate-500 font-bold hover:text-slate-300 transition-colors uppercase tracking-widest text-xs">Cancel</a>
@@ -30,4 +62,32 @@
     </div>
 </div>
 
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+        const attendedCheck = document.querySelector('input[name="is_attended"]');
+        const reasonWrapper = document.getElementById('absence_reason_wrapper');
+        const proofWrapper = document.getElementById('proof_wrapper');
+
+        const toggleFields = () => {
+            if (attendedCheck.checked) {
+                reasonWrapper.classList.add('hidden');
+                proofWrapper.classList.remove('hidden');
+            } else {
+                reasonWrapper.classList.remove('hidden');
+                proofWrapper.classList.add('hidden');
+            }
+        };
+
+        attendedCheck.addEventListener('change', toggleFields);
+        toggleFields(); // Initial state
+    });
+</script>
+
+<style>
+    /* Clean up crispy defaults to match premium theme */
+    .asteriskField { display: none; }
+    .invalid-feedback { font-size: 10px; font-weight: 800; text-transform: uppercase; margin-top: 4px; color: #ef4444; }
+    .form-control { background-color: #0f172a !important; border: 1px solid #1e293b !important; color: white !important; border-radius: 12px !important; padding: 12px !important; }
+    .form-control:focus { border-color: #6366f1 !important; box-shadow: none !important; }
+</style>
 {% endblock %}

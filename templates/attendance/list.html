@@ -42,22 +42,29 @@
                         <p class="text-[10px] text-slate-500">{{ att.timestamp|time:"H:i" }} Mark</p>
                     </td>
                     <td class="p-6">
-                        <div class="flex items-center space-x-2">
-                            {% if att.is_late %}
-                                <span class="bg-red-500/10 text-red-500 px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-tighter shadow-sm border border-red-500/20">Late</span>
-                            {% else %}
-                                <span class="bg-emerald-500/10 text-emerald-500 px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-tighter shadow-sm border border-emerald-500/20">On Time</span>
-                            {% endif %}
-                            
-                            {% if att.proof_image %}
-                                <div class="w-6 h-6 rounded-full bg-emerald-500/20 text-emerald-400 flex items-center justify-center text-[8px]" title="Proof Attached">
-                                    <i class="fa-solid fa-camera"></i>
-                                </div>
-                            {% else %}
-                                <div class="w-6 h-6 rounded-full bg-red-500/20 text-red-500 flex items-center justify-center text-[8px]" title="No Proof">
-                                    <i class="fa-solid fa-camera-slash"></i>
-                                </div>
-                            {% endif %}
+                        <div class="flex flex-col space-y-2">
+                             <div class="flex items-center space-x-2">
+                                {% if not att.is_attended %}
+                                    <span class="bg-red-500/20 text-red-400 px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-tighter border border-red-500/30">Skipped</span>
+                                {% else %}
+                                    <span class="bg-emerald-500/10 text-emerald-500 px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-tighter shadow-sm border border-emerald-500/20">Attended</span>
+                                {% endif %}
+                                
+                                {% if att.is_attended %}
+                                    {% if att.proof_image %}
+                                        <div class="w-6 h-6 rounded-full bg-emerald-500/20 text-emerald-400 flex items-center justify-center text-[8px]" title="Proof Attached">
+                                            <i class="fa-solid fa-camera"></i>
+                                        </div>
+                                    {% else %}
+                                        <div class="w-6 h-6 rounded-full bg-red-500/20 text-red-500 flex items-center justify-center text-[8px]" title="No Proof">
+                                            <i class="fa-solid fa-camera-slash"></i>
+                                        </div>
+                                    {% endif %}
+                                {% endif %}
+                             </div>
+                             {% if not att.is_attended and att.reason_for_absence %}
+                                <p class="text-[10px] text-red-500/70 italic max-w-[150px] leading-tight">Reason: {{ att.reason_for_absence }}</p>
+                             {% endif %}
                         </div>
                     </td>
                     <td class="p-6 text-right">

@@ -15,9 +15,10 @@ class AttendanceListView(LoginRequiredMixin, ListView):
 class AttendanceForm(forms.ModelForm):
     class Meta:
         model = AttendanceRecord
-        fields = ['lecture_name', 'scheduled_time', 'proof_image', 'notes']
+        fields = ['lecture_name', 'is_attended', 'reason_for_absence', 'proof_image', 'notes']
         widgets = {
-            'scheduled_time': forms.TimeInput(attrs={'type': 'time', 'class': 'input-premium'}),
+            'is_attended': forms.CheckboxInput(attrs={'class': 'w-6 h-6 rounded bg-slate-800 border-slate-700 text-indigo-500 focus:ring-indigo-500'}),
+            'reason_for_absence': forms.Textarea(attrs={'rows': 2, 'class': 'input-premium', 'placeholder': 'Optional if skipped...'}),
         }
 
 class AttendanceMarkView(LoginRequiredMixin, CreateView):
@@ -29,15 +30,6 @@ class AttendanceMarkView(LoginRequiredMixin, CreateView):
     def form_valid(self, form):
         form.instance.user = self.request.user
         form.instance.date = timezone.localtime(timezone.now()).date()
-        
-        # Lateness logic based on scheduled_time
-        now = timezone.localtime(timezone.now())
-        if form.instance.scheduled_time:
-            # Create a full datetime for today at the scheduled time
-            scheduled_dt = timezone.make_aware(timezone.datetime.combine(form.instance.date, form.instance.scheduled_time))
-            # Grace period of 15 minutes
-            if now > (scheduled_dt + timezone.timedelta(minutes=15)):
-                form.instance.is_late = True
         
         response = super().form_valid(form)
         form.instance.calculate_credibility()
