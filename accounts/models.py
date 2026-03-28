@@ -11,6 +11,10 @@ class UserProfile(models.Model):
     performance_score = models.FloatField(default=0.0) # Average or cumulative
     
     last_active_date = models.DateField(null=True, blank=True)
+    
+    # Notification Settings for Android System Drawer
+    notifications_enabled = models.BooleanField(default=True)
+    reminder_time = models.TimeField(default="20:00", help_text="What time should we remind you to update your data?")
 
     def __str__(self):
         return f"{self.user.username} Profile"

@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{% block title %}Personal Accountability Engine (PAE){% endblock %}</title>
+    <title>{% block title %}GrindCore | Pro Discipline Engine{% endblock %}</title>
     <!-- Tailwind CSS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- Google Fonts: Inter & Outfit -->
@@ -30,7 +30,7 @@
                 <div class="w-10 h-10 bg-indigo-500 rounded-xl flex items-center justify-center shadow-lg shadow-indigo-500/20">
                     <i class="fa-solid fa-fire text-white text-xl"></i>
                 </div>
-                <span class="text-2xl font-black tracking-tighter uppercase font-heading">PAE.System</span>
+                <span class="text-2xl font-black tracking-tighter uppercase font-heading">GrindCore</span>
             </div>
             
             <nav class="flex-1 space-y-3">
@@ -54,15 +54,15 @@
 
             <div class="border-t border-slate-800/50 pt-8">
                 {% if user.is_authenticated %}
-                <div class="flex items-center space-x-4 p-4 bg-slate-900/50 rounded-3xl border border-slate-800/50">
-                    <div class="w-12 h-12 rounded-2xl bg-gradient-to-br from-indigo-500 to-purple-500 flex items-center justify-center font-black text-white text-xl shadow-lg">
+                <a href="{% url 'profile' %}" class="flex items-center space-x-4 p-4 bg-slate-900/50 rounded-3xl border border-slate-800/50 hover:border-indigo-500/30 transition-all group">
+                    <div class="w-12 h-12 rounded-2xl bg-gradient-to-br from-indigo-500 to-purple-500 flex items-center justify-center font-black text-white text-xl shadow-lg group-hover:scale-105 transition-transform">
                         {{ user.username|first|upper }}
                     </div>
                     <div class="flex-1 overflow-hidden">
-                        <p class="text-sm font-black text-white truncate">{{ user.username|upper }}</p>
-                        <p class="text-[10px] text-indigo-400 font-bold uppercase tracking-widest">Elite Member</p>
+                        <p class="text-sm font-black text-white truncate group-hover:text-indigo-400 transition-colors">{{ user.username|upper }}</p>
+                        <p class="text-[10px] text-indigo-400 font-bold uppercase tracking-widest">Edit Profile <i class="fa-solid fa-chevron-right ml-1"></i></p>
                     </div>
-                </div>
+                </a>
                 <form action="{% url 'logout' %}" method="post" class="mt-4">
                     {% csrf_token %}
                     <button type="submit" class="w-full flex items-center justify-center space-x-2 p-3 rounded-xl text-slate-500 hover:text-red-400 transition-all duration-300 font-bold text-sm uppercase tracking-widest">
@@ -95,7 +95,21 @@
     <script>
         if ('serviceWorker' in navigator) {
           window.addEventListener('load', () => {
-            navigator.serviceWorker.register('{% static "sw.js" %}');
+            navigator.serviceWorker.register('{% static "sw.js" %}').then(reg => {
+                // Request Permission for Native PUSH
+                if (window.Notification && Notification.permission !== 'granted') {
+                    Notification.requestPermission(status => {
+                        if (status === 'granted') {
+                            reg.showNotification('PAE Alert!', {
+                                body: 'System Notifications are now ACTIVE. You will receive mission updates in your navbar.',
+                                icon: 'https://cdn-icons-png.flaticon.com/512/1169/1169611.png',
+                                badge: 'https://cdn-icons-png.flaticon.com/512/1169/1169611.png',
+                                vibrate: [200, 100, 200]
+                            });
+                        }
+                    });
+                }
+            });
           });
         }
     </script>
