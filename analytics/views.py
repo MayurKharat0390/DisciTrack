@@ -97,11 +97,17 @@ class DashboardView(LoginRequiredMixin, TemplateView):
             })
             current_date += timedelta(days=1)
 
+        # 7. Weekly stats for chart (lists for JSON)
+        weekly_labels = [log.date.strftime('%a') for log in weekly_logs]
+        weekly_scores = [float(log.total_score) for log in weekly_logs]
+
         context.update({
             'daily_log': daily_log,
             'goal_logs': goal_logs,
             'attendance': attendance,
             'weekly_logs': weekly_logs,
+            'weekly_labels': weekly_labels,
+            'weekly_scores': weekly_scores,
             'heatmap_data': heatmap_data,
             'profile': profile,
             'today': today

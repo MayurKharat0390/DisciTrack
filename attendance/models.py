@@ -11,6 +11,7 @@ class AttendanceRecord(models.Model):
     proof_image = models.ImageField(upload_to='attendance_proofs/', blank=True, null=True)
     notes = models.TextField(blank=True, null=True)
     
+    scheduled_time = models.TimeField(blank=True, null=True, help_text="What time was the lecture supposed to start?")
     is_late = models.BooleanField(default=False)
     credibility_score = models.FloatField(default=10.0) # Penalty for missing proof or being late
 

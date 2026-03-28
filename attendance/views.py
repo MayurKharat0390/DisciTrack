@@ -15,7 +15,10 @@ class AttendanceListView(LoginRequiredMixin, ListView):
 class AttendanceForm(forms.ModelForm):
     class Meta:
         model = AttendanceRecord
-        fields = ['lecture_name', 'proof_image', 'notes']
+        fields = ['lecture_name', 'scheduled_time', 'proof_image', 'notes']
+        widgets = {
+            'scheduled_time': forms.TimeInput(attrs={'type': 'time', 'class': 'input-premium'}),
+        }
 
 class AttendanceMarkView(LoginRequiredMixin, CreateView):
     model = AttendanceRecord
@@ -27,11 +30,14 @@ class AttendanceMarkView(LoginRequiredMixin, CreateView):
         form.instance.user = self.request.user
         form.instance.date = timezone.localtime(timezone.now()).date()
         
-        # Determine if it's late (Mock logic: if mark > 16:00 (4pm) after default)
-        # In real case, user would set their lecture time
+        # Lateness logic based on scheduled_time
         now = timezone.localtime(timezone.now())
-        if now.hour > 16:
-            form.instance.is_late = True
+        if form.instance.scheduled_time:
+            # Create a full datetime for today at the scheduled time
+            scheduled_dt = timezone.make_aware(timezone.datetime.combine(form.instance.date, form.instance.scheduled_time))
+            # Grace period of 15 minutes
+            if now > (scheduled_dt + timezone.timedelta(minutes=15)):
+                form.instance.is_late = True
         
         response = super().form_valid(form)
         form.instance.calculate_credibility()

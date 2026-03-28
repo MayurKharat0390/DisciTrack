@@ -22,8 +22,9 @@
             <div>
                 <p class="text-slate-400 text-sm font-semibold uppercase tracking-wider">Performance Score</p>
                 <h3 class="stat-value text-emerald-500">{{ daily_log.total_score|floatformat:1 }}</h3>
-                <p class="text-xs text-emerald-400 font-bold">{% if daily_log.total_score > 90 %}Excellent{% elif
-                    daily_log.total_score > 70 %}Consistent{% else %}Improving{% endif %}</p>
+                <p class="text-xs text-emerald-400 font-bold">
+                    {% if daily_log.total_score > 90 %}Excellent{% elif daily_log.total_score > 70 %}Consistent{% else %}Improving{% endif %}
+                </p>
             </div>
         </div>
 
@@ -35,7 +36,7 @@
                 <p class="text-white text-sm font-semibold uppercase tracking-wider">Goals (Today)</p>
                 <h3 class="text-3xl font-extrabold">{{ daily_log.goals_completed }}/{{ daily_log.total_goals }}</h3>
                 <div class="w-full bg-slate-800 rounded-full h-2 mt-2">
-                    <div class="bg-amber-500 h-2 rounded-full" style="width: {{ goal_percentage }} %"></div>
+                    <div class="bg-amber-500 h-2 rounded-full" style="width: {{ goal_percentage }}%"></div>
                 </div>
             </div>
         </div>
@@ -46,8 +47,7 @@
             </div>
             <div>
                 <p class="text-slate-400 text-sm font-semibold uppercase tracking-wider">Status</p>
-                <h3 class="text-2xl font-extrabold uppercase mt-1">{% if daily_log.is_locked %}Locked{% else %}Active{%
-                    endif %}</h3>
+                <h3 class="text-2xl font-extrabold uppercase mt-1">{% if daily_log.is_locked %}Locked{% else %}Active{% endif %}</h3>
                 <p class="text-xs text-slate-500 mt-1">{{ today|date:"F d, Y" }}</p>
             </div>
         </div>
@@ -63,58 +63,48 @@
                         <i class="fa-solid fa-list text-indigo-500"></i>
                         <span>Execution Dashboard (Today)</span>
                     </h2>
-                    <span
-                        class="px-4 py-1.5 bg-indigo-500/20 text-indigo-400 text-xs font-black rounded-full uppercase">Priority
-                        First</span>
+                    <span class="px-4 py-1.5 bg-indigo-500/20 text-indigo-400 text-xs font-black rounded-full uppercase">Priority First</span>
                 </div>
 
                 <div class="space-y-4">
                     {% for glog in goal_logs %}
-                    <div
-                        class="p-5 flex items-center justify-between bg-slate-800/40 rounded-2xl border border-transparent hover:border-slate-700 transition-all group">
+                    <div class="p-5 flex items-center justify-between bg-slate-800/40 rounded-2xl border border-transparent hover:border-slate-700 transition-all group">
                         <div class="flex items-center space-x-5">
                             <div class="w-12 h-12 rounded-xl bg-slate-700 flex items-center justify-center text-xl">
                                 {% if glog.goal.category == 'gym' %}<i class="fa-solid fa-dumbbell text-amber-500"></i>
-                                {% elif glog.goal.category == 'lecture' %}<i
-                                    class="fa-solid fa-graduation-cap text-blue-500"></i>
-                                {% elif glog.goal.category == 'coding' %}<i
-                                    class="fa-solid fa-code text-emerald-500"></i>
+                                {% elif glog.goal.category == 'lecture' %}<i class="fa-solid fa-graduation-cap text-blue-500"></i>
+                                {% elif glog.goal.category == 'coding' %}<i class="fa-solid fa-code text-emerald-500"></i>
                                 {% else %}<i class="fa-solid fa-star text-fuchsia-500"></i>{% endif %}
                             </div>
                             <div>
-                                <h4 class="font-bold text-white group-hover:text-indigo-400 transition-colors">{{
-                                    glog.goal.title }}</h4>
+                                <h4 class="font-bold text-white group-hover:text-indigo-400 transition-colors">{{ glog.goal.title }}</h4>
                                 <p class="text-sm text-slate-500">{{ glog.goal.get_category_display }}</p>
                             </div>
                         </div>
                         <div class="flex items-center space-x-3">
                             {% if glog.is_completed %}
-                            <form action="{% url 'goal_toggle' glog.goal.id %}" method="post">
-                                {% csrf_token %}
-                                <button type="submit"
-                                    class="bg-emerald-500/20 text-emerald-500 px-4 py-1 rounded-full text-sm font-bold flex items-center space-x-2 border border-emerald-500/30 hover:bg-emerald-500/30 transition-all">
-                                    <i class="fa-solid fa-circle-check"></i>
-                                    <span>Verified</span>
-                                </button>
-                            </form>
+                                <form action="{% url 'goal_toggle' glog.goal.id %}" method="post">
+                                    {% csrf_token %}
+                                    <button type="submit" class="bg-emerald-500/20 text-emerald-500 px-4 py-1 rounded-full text-sm font-bold flex items-center space-x-2 border border-emerald-500/30 hover:bg-emerald-500/30 transition-all">
+                                        <i class="fa-solid fa-circle-check"></i>
+                                        <span>Verified</span>
+                                    </button>
+                                </form>
                             {% else %}
-                            <form action="{% url 'goal_toggle' glog.goal.id %}" method="post">
-                                {% csrf_token %}
-                                <button type="submit"
-                                    class="p-2 w-10 h-10 rounded-full border-2 border-slate-700 text-slate-700 hover:border-indigo-500 hover:text-indigo-500 transition-all flex items-center justify-center">
-                                    <i class="fa-solid fa-check"></i>
-                                </button>
-                            </form>
+                                <form action="{% url 'goal_toggle' glog.goal.id %}" method="post">
+                                    {% csrf_token %}
+                                    <button type="submit" class="p-2 w-10 h-10 rounded-full border-2 border-slate-700 text-slate-700 hover:border-indigo-500 hover:text-indigo-500 transition-all flex items-center justify-center">
+                                        <i class="fa-solid fa-check"></i>
+                                    </button>
+                                </form>
                             {% endif %}
                         </div>
                     </div>
                     {% empty %}
                     <div class="text-center p-12 bg-slate-800/20 rounded-3xl border-2 border-dashed border-slate-800">
                         <i class="fa-solid fa-plus-circle text-5xl text-slate-700 mb-4"></i>
-                        <p class="text-slate-500 font-medium">No goals tracked for today. Add one in the Goals module.
-                        </p>
-                        <a href="{% url 'goal_create' %}" class="btn-premium mt-6 inline-block">Create New Goal
-                            Template</a>
+                        <p class="text-slate-500 font-medium">No goals tracked for today. Add one in the Goals module.</p>
+                        <a href="{% url 'goal_create' %}" class="btn-premium mt-6 inline-block">Create New Goal Template</a>
                     </div>
                     {% endfor %}
                 </div>
@@ -133,8 +123,7 @@
                         </div>
                     </div>
                 </div>
-                <div
-                    class="flex items-center justify-between mt-4 text-[10px] text-slate-500 font-bold uppercase tracking-widest">
+                <div class="flex items-center justify-between mt-4 text-[10px] text-slate-500 font-bold uppercase tracking-widest">
                     <span>Low Performance</span>
                     <div class="flex space-x-1">
                         <div class="w-2 h-2 rounded-sm bg-slate-800"></div>
@@ -165,10 +154,8 @@
                 </div>
                 <div class="space-y-4">
                     {% for item in attendance %}
-                    <div
-                        class="flex items-center space-x-4 p-3 bg-slate-800/50 rounded-xl border-l-2 border-indigo-500">
-                        <div
-                            class="w-8 h-8 rounded-lg bg-indigo-500/20 text-indigo-400 flex items-center justify-center">
+                    <div class="flex items-center space-x-4 p-3 bg-slate-800/50 rounded-xl border-l-2 border-indigo-500">
+                        <div class="w-8 h-8 rounded-lg bg-indigo-500/20 text-indigo-400 flex items-center justify-center">
                             <i class="fa-solid fa-building-columns"></i>
                         </div>
                         <div class="flex-1 overflow-hidden">
@@ -185,55 +172,62 @@
                     <p class="text-center text-slate-600 py-6 italic text-sm">No lecture attendance marked today.</p>
                     {% endfor %}
                 </div>
-                <a href="{% url 'attendance_mark' %}"
-                    class="w-full mt-6 p-3 bg-slate-800 hover:bg-slate-700 text-white rounded-xl text-xs font-black transition-all border border-slate-700 uppercase tracking-widest text-center inline-block">
+                <a href="{% url 'attendance_mark' %}" class="w-full mt-6 p-3 bg-slate-800 hover:bg-slate-700 text-white rounded-xl text-xs font-black transition-all border border-slate-700 uppercase tracking-widest text-center inline-block">
                     Submit Proof Image
                 </a>
             </div>
         </div>
     </div>
 </div>
+
+{{ weekly_labels|json_script:"weekly-labels" }}
+{{ weekly_scores|json_script:"weekly-scores" }}
 {% endblock %}
 
 {% block scripts %}
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script>
-    const chartData = {
-        labels: [{% for log in weekly_logs %}"{{ log.date|date:"D" }}"{% if not forloop.last %}, {% endif %} {% endfor %}],
-    scores: [{% for log in weekly_logs %}{ { log.total_score | stringformat: "f" } } {% if not forloop.last %}, {% endif %} {% endfor %}]
-    };
+    document.addEventListener('DOMContentLoaded', () => {
+        const labelsElement = document.getElementById('weekly-labels');
+        const scoresElement = document.getElementById('weekly-scores');
+        
+        if (labelsElement && scoresElement) {
+            const labels = JSON.parse(labelsElement.textContent);
+            const scores = JSON.parse(scoresElement.textContent);
 
-    const canvas = document.getElementById('weeklyChart');
-    if (canvas && chartData.labels.length > 0) {
-        const ctx = canvas.getContext('2d');
-        new Chart(ctx, {
-            type: 'line',
-            data: {
-                labels: chartData.labels,
-                datasets: [{
-                    label: 'Score',
-                    data: chartData.scores,
-                    borderColor: '#6366f1',
-                    backgroundColor: 'rgba(99, 102, 241, 0.1)',
-                    borderWidth: 4,
-                    pointRadius: 0,
-                    fill: true,
-                    tension: 0.4
-                }]
-            },
-            options: {
-                responsive: true,
-                maintainAspectRatio: false,
-                plugins: { legend: { display: false } },
-                scales: {
-                    y: { display: false, min: 0, max: 110 },
-                    x: {
-                        grid: { display: false },
-                        ticks: { color: '#475569', font: { size: 10, weight: 'bold' } }
+            const canvas = document.getElementById('weeklyChart');
+            if (canvas && labels.length > 0) {
+                const ctx = canvas.getContext('2d');
+                new Chart(ctx, {
+                    type: 'line',
+                    data: {
+                        labels: labels,
+                        datasets: [{
+                            label: 'Score',
+                            data: scores,
+                            borderColor: '#6366f1',
+                            backgroundColor: 'rgba(99, 102, 241, 0.1)',
+                            borderWidth: 4,
+                            pointRadius: 0,
+                            fill: true,
+                            tension: 0.4
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: { legend: { display: false } },
+                        scales: {
+                            y: { display: false, min: 0, max: 110 },
+                            x: {
+                                grid: { display: false },
+                                ticks: { color: '#475569', font: { size: 10, weight: 'bold' } }
+                            }
+                        }
                     }
-                }
+                });
             }
-        });
-    }
+        }
+    });
 </script>
 {% endblock %}
