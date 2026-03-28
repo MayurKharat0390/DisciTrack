@@ -7,8 +7,8 @@
     <title>{% block title %}Personal Accountability Engine (PAE){% endblock %}</title>
     <!-- Tailwind CSS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
-    <!-- Google Fonts: Inter -->
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <!-- Google Fonts: Inter & Outfit -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Outfit:wght@400;600;800;900&display=swap" rel="stylesheet">
     <!-- Font Awesome for icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <!-- Custom CSS -->
@@ -17,54 +17,57 @@
     <meta name="theme-color" content="#6366f1">
     <style>
         body { font-family: 'Inter', sans-serif; }
+        h1, h2, h3, h4, .font-heading { font-family: 'Outfit', sans-serif; }
     </style>
     {% block head %}{% endblock %}
 </head>
-<body class="min-h-screen">
+<body class="min-h-screen bg-[#020617] text-slate-200">
     <!-- Navigation (Sleek Sidebar for Desktop, Bottom Bar for Mobile) -->
     <div class="flex h-screen overflow-hidden">
         <!-- Desktop Sidebar -->
-        <aside class="hidden md:flex flex-col w-64 bg-slate-900 border-r border-slate-800 p-6 space-y-8">
-            <div class="flex items-center space-x-3 text-white mb-4">
-                <i class="fa-solid fa-fire text-indigo-500 text-3xl"></i>
-                <span class="text-xl font-extrabold tracking-tighter">PAE.SYSTEM</span>
+        <aside class="hidden md:flex flex-col w-72 bg-[#0b1120] border-r border-slate-800/50 p-8 space-y-10">
+            <div class="flex items-center space-x-3 text-white mb-2">
+                <div class="w-10 h-10 bg-indigo-500 rounded-xl flex items-center justify-center shadow-lg shadow-indigo-500/20">
+                    <i class="fa-solid fa-fire text-white text-xl"></i>
+                </div>
+                <span class="text-2xl font-black tracking-tighter uppercase font-heading">PAE.System</span>
             </div>
             
-            <nav class="flex-1 space-y-2">
-                <a href="{% url 'dashboard' %}" class="flex items-center space-x-3 p-3 rounded-xl transition-all hover:bg-slate-800 {% if request.path == '/' or '/dashboard' in request.path %} bg-slate-800 border-l-4 border-indigo-500 text-white {% else %} text-slate-400 {% endif %}">
-                    <i class="fa-solid fa-gauge-high"></i>
-                    <span class="font-medium">Dashboard</span>
+            <nav class="flex-1 space-y-3">
+                <a href="{% url 'dashboard' %}" class="flex items-center space-x-3 p-4 rounded-2xl transition-all duration-300 hover:bg-slate-800/50 group {% if request.path == '/' or '/dashboard' in request.path %} bg-indigo-500/10 border-l-4 border-indigo-500 text-white shadow-xl shadow-indigo-500/5 {% else %} text-slate-400 hover:text-white {% endif %}">
+                    <i class="fa-solid fa-gauge-high group-hover:scale-110 transition-transform"></i>
+                    <span class="font-bold text-sm tracking-wide uppercase">Dashboard</span>
                 </a>
-                <a href="{% url 'goal_list' %}" class="flex items-center space-x-3 p-3 rounded-xl transition-all hover:bg-slate-800 {% if '/goals/' in request.path %} bg-slate-800 border-l-4 border-indigo-500 text-white {% else %} text-slate-400 {% endif %}">
-                    <i class="fa-solid fa-list-check"></i>
-                    <span class="font-medium">Goals</span>
+                <a href="{% url 'goal_list' %}" class="flex items-center space-x-3 p-4 rounded-2xl transition-all duration-300 hover:bg-slate-800/50 group {% if '/goals/' in request.path %} bg-indigo-500/10 border-l-4 border-indigo-500 text-white shadow-xl shadow-indigo-500/5 {% else %} text-slate-400 hover:text-white {% endif %}">
+                    <i class="fa-solid fa-list-check group-hover:scale-110 transition-transform"></i>
+                    <span class="font-bold text-sm tracking-wide uppercase">Goals</span>
                 </a>
-                <a href="{% url 'attendance_list' %}" class="flex items-center space-x-3 p-3 rounded-xl transition-all hover:bg-slate-800 {% if '/attendance/' in request.path %} bg-slate-800 border-l-4 border-indigo-500 text-white {% else %} text-slate-400 {% endif %}">
-                    <i class="fa-solid fa-user-check"></i>
-                    <span class="font-medium">Attendance</span>
+                <a href="{% url 'attendance_list' %}" class="flex items-center space-x-3 p-4 rounded-2xl transition-all duration-300 hover:bg-slate-800/50 group {% if '/attendance/' in request.path %} bg-indigo-500/10 border-l-4 border-indigo-500 text-white shadow-xl shadow-indigo-500/5 {% else %} text-slate-400 hover:text-white {% endif %}">
+                    <i class="fa-solid fa-user-check group-hover:scale-110 transition-transform"></i>
+                    <span class="font-bold text-sm tracking-wide uppercase">Attendance</span>
                 </a>
-                <a href="{% url 'report' %}" class="flex items-center space-x-3 p-3 rounded-xl transition-all hover:bg-slate-800 {% if '/report/' in request.path %} bg-slate-800 border-l-4 border-indigo-500 text-white {% else %} text-slate-400 {% endif %}">
-                    <i class="fa-solid fa-chart-line"></i>
-                    <span class="font-medium">Analytics</span>
+                <a href="{% url 'report' %}" class="flex items-center space-x-3 p-4 rounded-2xl transition-all duration-300 hover:bg-slate-800/50 group {% if '/report/' in request.path or '/analytics/' in request.path %} bg-indigo-500/10 border-l-4 border-indigo-500 text-white shadow-xl shadow-indigo-500/5 {% else %} text-slate-400 hover:text-white {% endif %}">
+                    <i class="fa-solid fa-chart-line group-hover:scale-110 transition-transform"></i>
+                    <span class="font-bold text-sm tracking-wide uppercase">Analytics</span>
                 </a>
             </nav>
 
-            <div class="border-t border-slate-800 pt-6">
+            <div class="border-t border-slate-800/50 pt-8">
                 {% if user.is_authenticated %}
-                <div class="flex items-center space-x-3 p-2 bg-slate-800/50 rounded-2xl">
-                    <div class="w-10 h-10 rounded-full bg-indigo-500 flex items-center justify-center font-bold text-white">
+                <div class="flex items-center space-x-4 p-4 bg-slate-900/50 rounded-3xl border border-slate-800/50">
+                    <div class="w-12 h-12 rounded-2xl bg-gradient-to-br from-indigo-500 to-purple-500 flex items-center justify-center font-black text-white text-xl shadow-lg">
                         {{ user.username|first|upper }}
                     </div>
                     <div class="flex-1 overflow-hidden">
-                        <p class="text-sm font-bold text-white truncate">{{ user.username }}</p>
-                        <p class="text-xs text-slate-400">Level: {% if user.profile.performance_score > 80 %}Pro{% else %}Elite{% endif %}</p>
+                        <p class="text-sm font-black text-white truncate">{{ user.username|upper }}</p>
+                        <p class="text-[10px] text-indigo-400 font-bold uppercase tracking-widest">Elite Member</p>
                     </div>
                 </div>
                 <form action="{% url 'logout' %}" method="post" class="mt-4">
                     {% csrf_token %}
-                    <button type="submit" class="w-full flex items-center justify-center space-x-2 p-2 rounded-xl text-slate-500 hover:text-red-400 transition-colors">
-                        <i class="fa-solid fa-right-from-bracket"></i>
-                        <span class="text-sm font-semibold">Logout</span>
+                    <button type="submit" class="w-full flex items-center justify-center space-x-2 p-3 rounded-xl text-slate-500 hover:text-red-400 transition-all duration-300 font-bold text-sm uppercase tracking-widest">
+                        <i class="fa-solid fa-power-off"></i>
+                        <span>Logout</span>
                     </button>
                 </form>
                 {% else %}
@@ -74,19 +77,19 @@
         </aside>
 
         <!-- Main Content Area -->
-        <main class="flex-1 overflow-y-auto bg-slate-950 p-4 md:p-8">
-            <div class="max-w-6xl mx-auto">
+        <main class="flex-1 overflow-y-auto bg-[#020617] p-6 md:p-12">
+            <div class="max-w-6xl mx-auto pb-24 md:pb-0">
                 {% block content %}{% endblock %}
             </div>
         </main>
     </div>
 
     <!-- Mobile Bottom Navigation -->
-    <nav class="md:hidden fixed bottom-4 left-4 right-4 h-16 bg-slate-900/90 backdrop-blur-xl border border-slate-800 rounded-2xl flex items-center justify-around px-4 z-50">
-        <a href="{% url 'dashboard' %}" class="text-indigo-500"><i class="fa-solid fa-gauge-high text-xl"></i></a>
-        <a href="#" class="text-slate-500"><i class="fa-solid fa-list-check text-xl"></i></a>
-        <a href="#" class="text-slate-500"><i class="fa-solid fa-user-check text-xl"></i></a>
-        <a href="#" class="text-slate-500"><i class="fa-solid fa-chart-line text-xl"></i></a>
+    <nav class="md:hidden fixed bottom-4 left-4 right-4 h-18 bg-slate-900/90 backdrop-blur-3xl border border-white/5 rounded-3xl flex items-center justify-around px-2 z-50 shadow-2xl">
+        <a href="{% url 'dashboard' %}" class="p-3 {% if request.path == '/' %}text-indigo-500{% else %}text-slate-500{% endif %} hover:scale-110 transition-transform"><i class="fa-solid fa-gauge-high text-xl"></i></a>
+        <a href="{% url 'goal_list' %}" class="p-3 {% if '/goals/' in request.path %}text-indigo-500{% else %}text-slate-500{% endif %} hover:scale-110 transition-transform"><i class="fa-solid fa-list-check text-xl"></i></a>
+        <a href="{% url 'attendance_list' %}" class="p-3 {% if '/attendance/' in request.path %}text-indigo-500{% else %}text-slate-500{% endif %} hover:scale-110 transition-transform"><i class="fa-solid fa-user-check text-xl"></i></a>
+        <a href="{% url 'report' %}" class="p-3 {% if '/report/' in request.path %}text-indigo-500{% else %}text-slate-500{% endif %} hover:scale-110 transition-transform"><i class="fa-solid fa-chart-line text-xl"></i></a>
     </nav>
 
     <script>
