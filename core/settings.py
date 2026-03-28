@@ -25,7 +25,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = "django-insecure-&97_z@y6mpjpt54brhddt7@49rx(8h9*%=hxs)k8!_c@@i&dx8"
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = False
+DEBUG = True
 
 ALLOWED_HOSTS = ['*'] # In production, set this to specific domains if possible
 
@@ -95,6 +95,8 @@ if DATABASE_URL:
             ssl_require=True,
         )
     }
+elif 'VERCEL' in os.environ:
+    raise ValueError("MISSING DATABASE_URL IN VERCEL ENVIRONMENT")
 else:
     DATABASES = {
         "default": {
