@@ -1,4 +1,8 @@
-from django.views.generic import TemplateView, ListView
+from django.shortcuts import get_object_or_404, redirect
+from django.views import View
+from django.views.generic import ListView
+from django.views.generic.edit import CreateView
+from django.contrib.auth.mixins import LoginRequiredMixin
 from django.utils import timezone
 from .models import Goal, GoalLog
 
@@ -11,17 +15,13 @@ class GoalListView(LoginRequiredMixin, ListView):
         return Goal.objects.filter(user=self.request.user)
 
 class GoalCreateView(LoginRequiredMixin, CreateView):
-    class Meta:
-        model = Goal
-        fields = ['title', 'description', 'category']
-
-class GoalCreateView(LoginRequiredMixin, CreateView):
     model = Goal
-    form_class = GoalForm
+    fields = ['title', 'description', 'category']
     template_name = 'goals/create.html'
-    success_url = '/' # Dashboard
+    success_url = '/analytics/dashboard/' # Explicit target
 
     def form_valid(self, form):
+        form.status = 'active'
         form.instance.user = self.request.user
         return super().form_valid(form)
 
@@ -31,7 +31,7 @@ class ToggleGoalLogView(LoginRequiredMixin, View):
         today = timezone.localtime(timezone.now()).date()
         
         # Check if the goal log exists for today
-        log, created = GoalLog.objects.get_or_create(goal=goal, date=today)
+        log, _ = GoalLog.objects.get_or_create(goal=goal, date=today)
         
         # Simple toggle
         log.is_completed = not log.is_completed

@@ -1,4 +1,5 @@
 from django.views.generic import TemplateView, ListView
+from django.contrib.auth.mixins import LoginRequiredMixin
 from django.utils import timezone
 from .models import DailyLog
 from goals.models import Goal, GoalLog
@@ -69,13 +70,39 @@ class DashboardView(LoginRequiredMixin, TemplateView):
         weekly_logs = DailyLog.objects.filter(user=user, date__gte=seven_days_ago).order_by('date')
         
         # 5. Profile data
-        profile = user.profile
+        # 6. Generate Heatmap Data (Last 182 days - 26 weeks)
+        heatmap_data = []
+        end_date = today
+        start_date = end_date - timedelta(days=181) # 26 weeks approx
         
+        # Get all logs for this range
+        existing_logs = {log.date: log for log in DailyLog.objects.filter(user=user, date__range=[start_date, end_date])}
+        
+        current_date = start_date
+        while current_date <= end_date:
+            log = existing_logs.get(current_date)
+            score = log.total_score if log else 0
+            
+            # Map score to level
+            level = 0
+            if score > 80: level = 4
+            elif score > 60: level = 3
+            elif score > 40: level = 2
+            elif score > 0: level = 1
+            
+            heatmap_data.append({
+                'date': current_date,
+                'level': level,
+                'score': score
+            })
+            current_date += timedelta(days=1)
+
         context.update({
             'daily_log': daily_log,
             'goal_logs': goal_logs,
             'attendance': attendance,
             'weekly_logs': weekly_logs,
+            'heatmap_data': heatmap_data,
             'profile': profile,
             'today': today
         })
