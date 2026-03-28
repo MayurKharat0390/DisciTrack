@@ -14,7 +14,7 @@
     <!-- Custom CSS -->
     <link rel="stylesheet" href="{% static 'css/style.css' %}">
     <link rel="manifest" href="{% static 'manifest.json' %}">
-    <link rel="apple-touch-icon" href="{% static 'img/grindcore-icon.jpg' %}">
+    <link rel="apple-touch-icon" href="{% static 'img/grindcore-icon.png' %}">
     <meta name="theme-color" content="#6366f1">
     <style>
         body { font-family: 'Inter', sans-serif; }
@@ -103,8 +103,8 @@
                         if (status === 'granted') {
                             reg.showNotification('PAE Alert!', {
                                 body: 'System Notifications are now ACTIVE. You will receive mission updates in your navbar.',
-                                icon: '{% static "img/grindcore-icon.jpg" %}',
-                                badge: '{% static "img/grindcore-icon.jpg" %}',
+                                icon: '{% static "img/grindcore-icon.png" %}',
+                                badge: '{% static "img/grindcore-icon.png" %}',
                                 vibrate: [200, 100, 200]
                             });
                         }

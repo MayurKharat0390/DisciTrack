@@ -61,8 +61,8 @@ self.addEventListener('push', (event) => {
 
     const options = {
         body: data.body,
-        icon: '/static/img/grindcore-icon.jpg',
-        badge: '/static/img/grindcore-icon.jpg',
+        icon: '/static/img/grindcore-icon.png',
+        badge: '/static/img/grindcore-icon.png',
         vibrate: [100, 50, 100],
         data: {
             dateOfArrival: Date.now(),
