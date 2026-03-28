@@ -23,9 +23,9 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = "django-insecure-&97_z@y6mpjpt54brhddt7@49rx(8h9*%=hxs)k8!_c@@i&dx8"
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = False
 
-ALLOWED_HOSTS = ['.vercel.app', '127.0.0.1', 'localhost', '*']
+ALLOWED_HOSTS = ['grind-core.vercel.app', '.vercel.app', '127.0.0.1', 'localhost']
 
 
 # Application definition
@@ -148,6 +148,9 @@ LOGOUT_REDIRECT_URL = "login"
 
 CRISPY_ALLOWED_TEMPLATE_PACKS = "bootstrap5"
 CRISPY_TEMPLATE_PACK = "bootstrap5"
+
+# WhiteNoise static finders
+WHITENOISE_USE_FINDERS = True
 
 TIME_ZONE = "Asia/Kolkata"
 
