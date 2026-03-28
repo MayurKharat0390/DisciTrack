@@ -34,7 +34,7 @@
                 <p class="text-white text-sm font-semibold uppercase tracking-wider">Goals (Today)</p>
                 <h3 class="text-3xl font-extrabold">{{ daily_log.goals_completed }}/{{ daily_log.total_goals }}</h3>
                 <div class="w-full bg-slate-800 rounded-full h-2 mt-2">
-                    <div class="bg-amber-500 h-2 rounded-full" style="width: {% if daily_log.total_goals > 0 %}{{ daily_log.goals_completed|add:0|divisibleby:daily_log.total_goals|yesno:'100,50' }}{% else %}0{% endif %}%"></div>
+                    <div class="bg-amber-500 h-2 rounded-full" style="width: {{ goal_percentage }}%"></div>
                 </div>
             </div>
         </div>
@@ -184,34 +184,42 @@
 {% block scripts %}
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script>
-    const ctx = document.getElementById('weeklyChart').getContext('2d');
-    new Chart(ctx, {
-        type: 'line',
-        data: {
-            labels: [{% for log in weekly_logs %}'{{ log.date|date:"D" }}',{% endfor %}],
-            datasets: [{
-                label: 'Score',
-                data: [{% for log in weekly_logs %}{{ log.total_score }},{% endfor %}],
-                borderColor: '#6366f1',
-                backgroundColor: 'rgba(99, 102, 241, 0.1)',
-                borderWidth: 4,
-                pointRadius: 0,
-                fill: true,
-                tension: 0.4
-            }]
-        },
-        options: {
-            responsive: true,
-            maintainAspectRatio: false,
-            plugins: { legend: { display: false } },
-            scales: {
-                y: { display: false, min: 0, max: 110 },
-                x: {
-                    grid: { display: false },
-                    ticks: { color: '#475569', font: { size: 10, weight: 'bold' } }
+    const chartData = {
+        labels: [{% for log in weekly_logs %}"{{ log.date|date:"D" }}"{% if not forloop.last %}, {% endif %}{% endfor %}],
+        scores: [{% for log in weekly_logs %}{{ log.total_score|stringformat:"f" }}{% if not forloop.last %}, {% endif %}{% endfor %}]
+    };
+
+    const canvas = document.getElementById('weeklyChart');
+    if (canvas && chartData.labels.length > 0) {
+        const ctx = canvas.getContext('2d');
+        new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels: chartData.labels,
+                datasets: [{
+                    label: 'Score',
+                    data: chartData.scores,
+                    borderColor: '#6366f1',
+                    backgroundColor: 'rgba(99, 102, 241, 0.1)',
+                    borderWidth: 4,
+                    pointRadius: 0,
+                    fill: true,
+                    tension: 0.4
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: { legend: { display: false } },
+                scales: {
+                    y: { display: false, min: 0, max: 110 },
+                    x: {
+                        grid: { display: false },
+                        ticks: { color: '#475569', font: { size: 10, weight: 'bold' } }
+                    }
                 }
             }
-        }
-    });
+        });
+    }
 </script>
 {% endblock %}

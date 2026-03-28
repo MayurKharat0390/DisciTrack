@@ -79,4 +79,11 @@ class DashboardView(LoginRequiredMixin, TemplateView):
             'profile': profile,
             'today': today
         })
+
+        # Calculate goal completion percentage for the progress bar
+        if daily_log.total_goals > 0:
+            context['goal_percentage'] = (daily_log.goals_completed / daily_log.total_goals) * 100
+        else:
+            context['goal_percentage'] = 0
+            
         return context
