@@ -1,0 +1,36 @@
+{% extends "base/base.html" %}
+{% load crispy_forms_tags %}
+
+{% block content %}
+<div class="flex items-center justify-center min-h-[80vh] animate-fade-in">
+    <div class="glass-card w-full max-w-md p-8 bg-slate-900 shadow-2xl">
+        <div class="text-center mb-10">
+            <i class="fa-solid fa-rocket text-indigo-500 text-5xl mb-4"></i>
+            <h1 class="text-3xl font-extrabold text-white tracking-tight">System Initialization</h1>
+            <p class="text-slate-400 mt-2">Initialize Your Performance Tracker</p>
+        </div>
+
+        <form method="post" class="space-y-6">
+            {% csrf_token %}
+            {{ form|crispy }}
+            <button type="submit" class="btn-premium w-full mt-4 flex items-center justify-center space-x-2">
+                <i class="fa-solid fa-play"></i>
+                <span>Initialize Engine</span>
+            </button>
+        </form>
+
+        <div class="mt-8 text-center border-t border-slate-800 pt-6">
+            <p class="text-slate-400">Already have an engine?</p>
+            <a href="{% url 'login' %}" class="text-indigo-400 font-bold hover:text-indigo-300 transition-colors inline-block mt-2">Sign In</a>
+        </div>
+    </div>
+</div>
+
+<style>
+    /* Styling for crispy forms to match the theme */
+    .form-group label { color: #94a3b8; font-weight: 500; font-size: 0.875rem; margin-bottom: 0.5rem; }
+    .form-control { background-color: #0f172a !important; border-color: #334155 !important; color: white !important; border-radius: 0.75rem !important; }
+    .form-control:focus { border-color: #6366f1 !important; box-shadow: 0 0 0 2px rgba(99, 102, 241, 0.2) !important; }
+    .help-text, .text-muted { font-size: 0.75rem; color: #64748b !important; }
+</style>
+{% endblock %}

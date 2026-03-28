@@ -1,0 +1,101 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Personal Accountability Engine (PAE){% endblock %}</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Google Fonts: Inter -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <!-- Font Awesome for icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+    <link rel="manifest" href="{% static 'manifest.json' %}">
+    <meta name="theme-color" content="#6366f1">
+    <style>
+        body { font-family: 'Inter', sans-serif; }
+    </style>
+    {% block head %}{% endblock %}
+</head>
+<body class="min-h-screen">
+    <!-- Navigation (Sleek Sidebar for Desktop, Bottom Bar for Mobile) -->
+    <div class="flex h-screen overflow-hidden">
+        <!-- Desktop Sidebar -->
+        <aside class="hidden md:flex flex-col w-64 bg-slate-900 border-r border-slate-800 p-6 space-y-8">
+            <div class="flex items-center space-x-3 text-white mb-4">
+                <i class="fa-solid fa-fire text-indigo-500 text-3xl"></i>
+                <span class="text-xl font-extrabold tracking-tighter">PAE.SYSTEM</span>
+            </div>
+            
+            <nav class="flex-1 space-y-2">
+                <a href="{% url 'dashboard' %}" class="flex items-center space-x-3 p-3 rounded-xl transition-all hover:bg-slate-800 {% if request.path == '/' or '/dashboard' in request.path %} bg-slate-800 border-l-4 border-indigo-500 text-white {% else %} text-slate-400 {% endif %}">
+                    <i class="fa-solid fa-gauge-high"></i>
+                    <span class="font-medium">Dashboard</span>
+                </a>
+                <a href="#" class="flex items-center space-x-3 p-3 rounded-xl transition-all hover:bg-slate-800 text-slate-400">
+                    <i class="fa-solid fa-list-check"></i>
+                    <span class="font-medium">Goals</span>
+                </a>
+                <a href="#" class="flex items-center space-x-3 p-3 rounded-xl transition-all hover:bg-slate-800 text-slate-400">
+                    <i class="fa-solid fa-user-check"></i>
+                    <span class="font-medium">Attendance</span>
+                </a>
+                <a href="#" class="flex items-center space-x-3 p-3 rounded-xl transition-all hover:bg-slate-800 text-slate-400">
+                    <i class="fa-solid fa-chart-line"></i>
+                    <span class="font-medium">Analytics</span>
+                </a>
+            </nav>
+
+            <div class="border-t border-slate-800 pt-6">
+                {% if user.is_authenticated %}
+                <div class="flex items-center space-x-3 p-2 bg-slate-800/50 rounded-2xl">
+                    <div class="w-10 h-10 rounded-full bg-indigo-500 flex items-center justify-center font-bold text-white">
+                        {{ user.username|first|upper }}
+                    </div>
+                    <div class="flex-1 overflow-hidden">
+                        <p class="text-sm font-bold text-white truncate">{{ user.username }}</p>
+                        <p class="text-xs text-slate-400">Level: {% if user.profile.performance_score > 80 %}Pro{% else %}Elite{% endif %}</p>
+                    </div>
+                </div>
+                <form action="{% url 'logout' %}" method="post" class="mt-4">
+                    {% csrf_token %}
+                    <button type="submit" class="w-full flex items-center justify-center space-x-2 p-2 rounded-xl text-slate-500 hover:text-red-400 transition-colors">
+                        <i class="fa-solid fa-right-from-bracket"></i>
+                        <span class="text-sm font-semibold">Logout</span>
+                    </button>
+                </form>
+                {% else %}
+                <a href="{% url 'login' %}" class="btn-premium block w-full text-center">Login</a>
+                {% endif %}
+            </div>
+        </aside>
+
+        <!-- Main Content Area -->
+        <main class="flex-1 overflow-y-auto bg-slate-950 p-4 md:p-8">
+            <div class="max-w-6xl mx-auto">
+                {% block content %}{% endblock %}
+            </div>
+        </main>
+    </div>
+
+    <!-- Mobile Bottom Navigation -->
+    <nav class="md:hidden fixed bottom-4 left-4 right-4 h-16 bg-slate-900/90 backdrop-blur-xl border border-slate-800 rounded-2xl flex items-center justify-around px-4 z-50">
+        <a href="{% url 'dashboard' %}" class="text-indigo-500"><i class="fa-solid fa-gauge-high text-xl"></i></a>
+        <a href="#" class="text-slate-500"><i class="fa-solid fa-list-check text-xl"></i></a>
+        <a href="#" class="text-slate-500"><i class="fa-solid fa-user-check text-xl"></i></a>
+        <a href="#" class="text-slate-500"><i class="fa-solid fa-chart-line text-xl"></i></a>
+    </nav>
+
+    <script>
+        if ('serviceWorker' in navigator) {
+          window.addEventListener('load', () => {
+            navigator.serviceWorker.register('{% static "sw.js" %}');
+          });
+        }
+    </script>
+    {% block scripts %}{% endblock %}
+</body>
+</html>
