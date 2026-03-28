@@ -60,10 +60,16 @@
             <div class="glass-card p-8 bg-slate-900 border border-slate-800">
                 <div class="flex items-center justify-between mb-8">
                     <h2 class="text-2xl font-black text-white flex items-center space-x-3">
-                        <i class="fa-solid fa-list text-indigo-500"></i>
-                        <span>Execution Dashboard (Today)</span>
+                        <div class="w-10 h-10 bg-indigo-500 rounded-xl flex items-center justify-center text-white shadow-lg shadow-indigo-500/30">
+                            <i class="fa-solid fa-fire"></i>
+                        </div>
+                        <span>Daily Grind Tracker</span>
                     </h2>
-                    <span class="px-4 py-1.5 bg-indigo-500/20 text-indigo-400 text-xs font-black rounded-full uppercase">Priority First</span>
+                    <div class="flex items-center space-x-2">
+                        <span class="px-4 py-1.5 bg-indigo-500/20 text-indigo-400 text-xs font-black rounded-full uppercase border border-indigo-500/30">
+                            {{ goal_logs.count }} Missions Active
+                        </span>
+                    </div>
                 </div>
 
                 <div class="space-y-4">
@@ -78,7 +84,12 @@
                             </div>
                             <div>
                                 <h4 class="font-bold text-white group-hover:text-indigo-400 transition-colors">{{ glog.goal.title }}</h4>
-                                <p class="text-sm text-slate-500">{{ glog.goal.get_category_display }}</p>
+                                <div class="flex items-center space-x-2 mt-1">
+                                    <p class="text-[10px] text-slate-500 font-bold uppercase tracking-wider">{{ glog.goal.get_category_display }}</p>
+                                    {% if glog.goal.is_daily_grind %}
+                                        <span class="text-[8px] bg-amber-500/20 text-amber-500 px-2 py-0.5 rounded-full font-black uppercase tracking-tighter">Daily Grind</span>
+                                    {% endif %}
+                                </div>
                             </div>
                         </div>
                         <div class="flex items-center space-x-3">

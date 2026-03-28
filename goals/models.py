@@ -13,6 +13,7 @@ class Goal(models.Model):
     title = models.CharField(max_length=200)
     description = models.TextField(blank=True, null=True)
     category = models.CharField(max_length=20, choices=CATEGORY_CHOICES, default='other')
+    is_daily_grind = models.BooleanField(default=True, help_text="Is this a part of your daily grind/routine?")
     is_active = models.BooleanField(default=True)
     created_at = models.DateTimeField(auto_now_add=True)
 
