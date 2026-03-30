@@ -12,74 +12,113 @@
         </div>
     </div>
 
-    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mt-10">
-        <div class="glass-card p-6 border-l-4 border-indigo-500 bg-slate-900 shadow-xl">
-            <h3 class="text-xs font-black text-slate-500 uppercase tracking-widest mb-2">Total Logged Days</h3>
-            <p class="text-4xl font-black text-white">{{ all_logs.count }}</p>
-            <p class="text-[10px] text-slate-500 mt-2 font-bold uppercase tracking-widest">Historical Volume</p>
+    <div class="grid grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6 mt-10">
+        <div class="glass-card p-4 md:p-6 border-l-4 border-indigo-500 bg-slate-900 shadow-xl">
+            <h3 class="text-[10px] font-black text-slate-500 uppercase tracking-widest mb-1">Total Logs</h3>
+            <p class="text-3xl md:text-4xl font-black text-white">{{ all_logs.count }}</p>
+            <p class="hidden md:block text-[10px] text-slate-500 mt-2 font-bold uppercase tracking-widest">Historical Volume</p>
         </div>
-        <div class="glass-card p-6 border-l-4 border-emerald-500 bg-slate-900 shadow-xl">
-            <h3 class="text-xs font-black text-slate-500 uppercase tracking-widest mb-2">Highest Consistency</h3>
-            <p class="text-4xl font-black text-emerald-500">100.0</p>
-            <p class="text-[10px] text-emerald-500 mt-2 font-bold uppercase tracking-widest">Ideal Discipline</p>
+        <div class="glass-card p-4 md:p-6 border-l-4 border-emerald-500 bg-slate-900 shadow-xl">
+            <h3 class="text-[10px] font-black text-slate-500 uppercase tracking-widest mb-1">Top Score</h3>
+            <p class="text-3xl md:text-4xl font-black text-emerald-500">100.0</p>
+            <p class="hidden md:block text-[10px] text-emerald-500 mt-2 font-bold uppercase tracking-widest">Ideal Discipline</p>
         </div>
+        <!-- Note: Adding empty cards for small screen grid consistency if needed, or just let them span -->
     </div>
 
-    <!-- Data Insights Table -->
-    <div class="glass-card bg-slate-900 border border-slate-800 overflow-hidden shadow-2xl mt-10">
-        <div class="p-6 border-b border-slate-800 flex items-center justify-between">
-            <h3 class="text-xl font-black text-white">Execution Stability History</h3>
-            <span class="text-xs font-bold text-slate-500 uppercase tracking-widest">{{ all_logs.count }} Data Points</span>
+    <!-- Data Insights -->
+    <div class="mt-10">
+        <div class="flex items-center justify-between mb-6 px-2">
+            <h3 class="text-xl font-black text-white">Execution History</h3>
+            <span class="text-[10px] font-bold text-slate-500 uppercase tracking-widest">{{ all_logs.count }} Data Points</span>
         </div>
-        <table class="w-full text-left border-collapse">
-            <thead>
-                <tr class="bg-indigo-500/10 text-[10px] font-black uppercase tracking-widest text-indigo-400">
-                    <th class="p-6">Date</th>
-                    <th class="p-6">Goals Ratio</th>
-                    <th class="p-6">Attendance</th>
-                    <th class="p-6 text-right">Daily Score</th>
-                </tr>
-            </thead>
-            <tbody class="text-sm text-slate-300">
-                {% for log in all_logs %}
-                <tr onclick="window.location='{% url 'day_detail' log.date|date:'Y-m-d' %}'" class="border-t border-slate-800 hover:bg-slate-800/10 cursor-pointer transition-colors group">
-                    <td class="p-6">
-                        <div class="flex items-center space-x-3">
-                            <i class="fa-solid fa-chevron-right text-[8px] text-slate-700 group-hover:text-indigo-500 transition-colors"></i>
-                            <h4 class="font-bold text-white">{{ log.date|date:"D, M d, Y" }}</h4>
-                        </div>
-                        <p class="text-[10px] text-slate-500 ml-5">Streak: {{ log.streak_count }} Days</p>
-                    </td>
-                    <td class="p-6">
-                        <div class="flex items-center space-x-3">
-                            <div class="flex-1 w-24 bg-slate-800 h-2 rounded-full overflow-hidden">
-                                <div class="bg-indigo-500 h-full" style="width: {% if log.total_goals > 0 %}{% widthratio log.goals_completed log.total_goals 100 %}{% else %}0{% endif %}%"></div>
-                            </div>
-                            <span class="text-xs font-bold text-slate-500">{{ log.goals_completed }}/{{ log.total_goals }}</span>
-                        </div>
-                    </td>
-                    <td class="p-6">
-                        <p class="text-xs font-bold text-slate-300">{{ log.attendance_marked }} Sessions</p>
-                        <p class="text-[10px] text-slate-500 italic">Target: {{ log.total_lectures }} Sessions</p>
-                    </td>
-                    <td class="p-6 text-right">
-                        {% if log.is_locked %}
-                            <span class="mr-3 text-red-500 text-[8px] uppercase font-black tracking-widest border border-red-500/30 px-2 py-0.5 rounded-full bg-red-500/10">Locked</span>
-                        {% endif %}
+
+        <!-- Mobile List View -->
+        <div class="md:hidden space-y-4">
+            {% for log in all_logs %}
+            <div onclick="window.location='{% url 'day_detail' log.date|date:'Y-m-d' %}'" class="glass-card p-5 bg-slate-900 border border-slate-800 active:bg-slate-800 transition-colors">
+                <div class="flex justify-between items-start mb-4">
+                    <div>
+                        <h4 class="font-bold text-white text-lg">{{ log.date|date:"D, M d" }}</h4>
+                        <p class="text-[10px] text-slate-500 font-bold uppercase">Streak: {{ log.streak_count }} Days</p>
+                    </div>
+                    <div class="text-right">
                         <span class="text-2xl font-black {% if log.total_score > 80 %}text-indigo-500{% elif log.total_score > 60 %}text-amber-500{% else %}text-red-500{% endif %}">
                             {{ log.total_score|floatformat:1 }}%
                         </span>
-                    </td>
-                </tr>
-                {% empty %}
-                <tr>
-                    <td colspan="4" class="p-20 text-center text-slate-500">
-                        Insufficient data points for analytics.
-                    </td>
-                </tr>
-                {% endfor %}
-            </tbody>
-        </table>
+                        {% if log.is_locked %}
+                            <p class="text-[8px] text-red-500 font-black uppercase">Locked</p>
+                        {% endif %}
+                    </div>
+                </div>
+                <div class="grid grid-cols-2 gap-4 pt-4 border-t border-slate-800/50">
+                    <div>
+                        <p class="text-[9px] text-slate-500 font-black uppercase mb-1">Missions</p>
+                        <p class="text-xs font-bold text-slate-300">{{ log.goals_completed }}/{{ log.total_goals }}</p>
+                    </div>
+                    <div>
+                        <p class="text-[9px] text-slate-500 font-black uppercase mb-1">Attendance</p>
+                        <p class="text-xs font-bold text-slate-300">{{ log.attendance_marked }} Sessions</p>
+                    </div>
+                </div>
+            </div>
+            {% empty %}
+            <p class="text-center text-slate-600 py-10 italic">No data logs yet.</p>
+            {% endfor %}
+        </div>
+
+        <!-- Desktop Table View -->
+        <div class="hidden md:block glass-card bg-slate-900 border border-slate-800 overflow-hidden shadow-2xl">
+            <table class="w-full text-left border-collapse">
+                <thead>
+                    <tr class="bg-indigo-500/10 text-[10px] font-black uppercase tracking-widest text-indigo-400">
+                        <th class="p-6">Date</th>
+                        <th class="p-6">Goals Ratio</th>
+                        <th class="p-6">Attendance</th>
+                        <th class="p-6 text-right">Daily Score</th>
+                    </tr>
+                </thead>
+                <tbody class="text-sm text-slate-300">
+                    {% for log in all_logs %}
+                    <tr onclick="window.location='{% url 'day_detail' log.date|date:'Y-m-d' %}'" class="border-t border-slate-800 hover:bg-slate-800/10 cursor-pointer transition-colors group">
+                        <td class="p-6">
+                            <div class="flex items-center space-x-3">
+                                <i class="fa-solid fa-chevron-right text-[8px] text-slate-700 group-hover:text-indigo-500 transition-colors"></i>
+                                <h4 class="font-bold text-white">{{ log.date|date:"D, M d, Y" }}</h4>
+                            </div>
+                            <p class="text-[10px] text-slate-500 ml-5">Streak: {{ log.streak_count }} Days</p>
+                        </td>
+                        <td class="p-6">
+                            <div class="flex items-center space-x-3">
+                                <div class="flex-1 w-24 bg-slate-800 h-2 rounded-full overflow-hidden">
+                                    <div class="bg-indigo-500 h-full" style="width: {% if log.total_goals > 0 %}{% widthratio log.goals_completed log.total_goals 100 %}{% else %}0{% endif %}%"></div>
+                                </div>
+                                <span class="text-xs font-bold text-slate-500">{{ log.goals_completed }}/{{ log.total_goals }}</span>
+                            </div>
+                        </td>
+                        <td class="p-6">
+                            <p class="text-xs font-bold text-slate-300">{{ log.attendance_marked }} Sessions</p>
+                            <p class="text-[10px] text-slate-500 italic">Target: {{ log.total_lectures }} Sessions</p>
+                        </td>
+                        <td class="p-6 text-right">
+                            {% if log.is_locked %}
+                                <span class="mr-3 text-red-500 text-[8px] uppercase font-black tracking-widest border border-red-500/30 px-2 py-0.5 rounded-full bg-red-500/10">Locked</span>
+                            {% endif %}
+                            <span class="text-2xl font-black {% if log.total_score > 80 %}text-indigo-500{% elif log.total_score > 60 %}text-amber-500{% else %}text-red-500{% endif %}">
+                                {{ log.total_score|floatformat:1 }}%
+                            </span>
+                        </td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="4" class="p-20 text-center text-slate-500">
+                            Insufficient data points for analytics.
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
     </div>
 </div>
 {% endblock %}
