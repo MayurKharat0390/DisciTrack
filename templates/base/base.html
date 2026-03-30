@@ -87,28 +87,46 @@
 
     <!-- Mobile Bottom Navigation -->
     <nav class="md:hidden fixed bottom-4 left-4 right-4 h-18 bg-slate-900/90 backdrop-blur-3xl border border-white/5 rounded-3xl flex items-center justify-around px-2 z-50 shadow-2xl">
-        <a href="{% url 'dashboard' %}" class="p-3 {% if request.path == '/' %}text-indigo-500{% else %}text-slate-500{% endif %} hover:scale-110 transition-transform"><i class="fa-solid fa-gauge-high text-xl"></i></a>
+        <a href="{% url 'dashboard' %}" class="p-3 {% if request.path == '/' or '/dashboard/' in request.path %}text-indigo-500{% else %}text-slate-500{% endif %} hover:scale-110 transition-transform"><i class="fa-solid fa-gauge-high text-xl"></i></a>
         <a href="{% url 'goal_list' %}" class="p-3 {% if '/goals/' in request.path %}text-indigo-500{% else %}text-slate-500{% endif %} hover:scale-110 transition-transform"><i class="fa-solid fa-list-check text-xl"></i></a>
         <a href="{% url 'attendance_list' %}" class="p-3 {% if '/attendance/' in request.path %}text-indigo-500{% else %}text-slate-500{% endif %} hover:scale-110 transition-transform"><i class="fa-solid fa-user-check text-xl"></i></a>
-        <a href="{% url 'report' %}" class="p-3 {% if '/report/' in request.path %}text-indigo-500{% else %}text-slate-500{% endif %} hover:scale-110 transition-transform"><i class="fa-solid fa-chart-line text-xl"></i></a>
+        <a href="{% url 'report' %}" class="p-3 {% if '/report/' in request.path or '/analytics/' in request.path %}text-indigo-500{% else %}text-slate-500{% endif %} hover:scale-110 transition-transform"><i class="fa-solid fa-chart-line text-xl"></i></a>
+        {% if user.is_authenticated %}
+        <a href="{% url 'profile' %}" class="p-3 {% if '/profile/' in request.path %}text-indigo-500{% else %}text-slate-500{% endif %} hover:scale-110 transition-transform"><i class="fa-solid fa-user text-xl"></i></a>
+        {% else %}
+        <a href="{% url 'login' %}" class="p-3 {% if '/login/' in request.path %}text-indigo-500{% else %}text-slate-500{% endif %} hover:scale-110 transition-transform"><i class="fa-solid fa-right-to-bracket text-xl"></i></a>
+        {% endif %}
     </nav>
 
     <script>
         if ('serviceWorker' in navigator) {
           window.addEventListener('load', () => {
             navigator.serviceWorker.register('{% static "sw.js" %}').then(reg => {
-                // Request Permission for Native PUSH
-                if (window.Notification && Notification.permission !== 'granted') {
-                    Notification.requestPermission(status => {
-                        if (status === 'granted') {
-                            reg.showNotification('PAE Alert!', {
-                                body: 'System Notifications are now ACTIVE. You will receive mission updates in your navbar.',
-                                icon: '{% static "img/grindcore-icon.png" %}',
-                                badge: '{% static "img/grindcore-icon.png" %}',
-                                vibrate: [200, 100, 200]
-                            });
-                        }
-                    });
+                // Defer Notification Permission Request to user interaction
+                const requestPerm = () => {
+                    if (window.Notification && Notification.permission === 'default') {
+                        Notification.requestPermission(status => {
+                            if (status === 'granted') {
+                                reg.showNotification('PAE Alert!', {
+                                    body: 'System Notifications are now ACTIVE. You will receive mission updates in your navbar.',
+                                    icon: '{% static "img/grindcore-icon.png" %}',
+                                    badge: '{% static "img/grindcore-icon.png" %}',
+                                    vibrate: [200, 100, 200]
+                                });
+                            }
+                        });
+                    }
+                    // Clean up event listeners after first interaction
+                    document.removeEventListener('click', requestPerm);
+                    document.removeEventListener('touchstart', requestPerm);
+                };
+
+                // Check and attach listener if permission is 'default'
+                if (window.Notification && Notification.permission === 'default') {
+                    document.addEventListener('click', requestPerm);
+                    document.addEventListener('touchstart', requestPerm);
+                } else if (window.Notification && Notification.permission === 'granted') {
+                    // Update notification settings if possible, or just stay quiet
                 }
             });
           });
