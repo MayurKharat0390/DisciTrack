@@ -5,8 +5,34 @@ from .models import DailyLog
 from goals.models import Goal, GoalLog
 from attendance.models import AttendanceRecord
 from accounts.models import UserProfile
-from datetime import timedelta
+from datetime import datetime, timedelta
 from core.utils import sync_daily_logs
+
+class DailyDetailView(LoginRequiredMixin, TemplateView):
+    template_name = 'analytics/day_detail.html'
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        user = self.request.user
+        date_str = self.kwargs.get('date')
+        
+        try:
+            target_date = datetime.strptime(date_str, '%Y-%m-%d').date()
+        except (ValueError, TypeError):
+            # Fallback to today if date is invalid
+            target_date = timezone.localtime(timezone.now()).date()
+            
+        daily_log = DailyLog.objects.filter(user=user, date=target_date).first()
+        goal_logs = GoalLog.objects.filter(goal__user=user, date=target_date)
+        attendance = AttendanceRecord.objects.filter(user=user, date=target_date)
+        
+        context.update({
+            'daily_log': daily_log,
+            'goal_logs': goal_logs,
+            'attendance': attendance,
+            'target_date': target_date,
+        })
+        return context
 
 class AnalyticsReportView(LoginRequiredMixin, TemplateView):
     template_name = 'analytics/report.html'

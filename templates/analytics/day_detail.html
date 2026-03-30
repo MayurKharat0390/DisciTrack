@@ -1,0 +1,123 @@
+{% extends "base/base.html" %}
+
+{% block content %}
+<div class="space-y-8 animate-fade-in">
+    <!-- Header -->
+    <div class="flex items-center justify-between">
+        <div>
+            <h1 class="text-3xl font-black text-white tracking-tight flex items-center space-x-3">
+                <i class="fa-solid fa-calendar-day text-indigo-500"></i>
+                <span>Mission Detail: {{ target_date|date:"F d, Y" }}</span>
+            </h1>
+            <p class="text-slate-500 font-medium font-heading uppercase tracking-widest text-[10px] mt-1">Snapshot of past execution integrity.</p>
+        </div>
+        <a href="{% url 'report' %}" class="px-5 py-2.5 bg-slate-800 text-white text-xs font-black rounded-xl border border-slate-700 hover:bg-slate-700 transition-all uppercase tracking-widest">
+            Back to Logs
+        </a>
+    </div>
+
+    <!-- Stats Summary Row -->
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <div class="glass-card p-6 flex flex-col border-l-4 border-indigo-500 bg-slate-900/50">
+            <p class="text-slate-400 text-[10px] font-black uppercase tracking-widest mb-1">Execution Score</p>
+            <h3 class="text-4xl font-black text-white">{{ daily_log.total_score|default:0|floatformat:1 }}%</h3>
+            <div class="w-full bg-slate-800 h-1.5 rounded-full mt-3 overflow-hidden">
+                <div class="bg-indigo-500 h-full rounded-full transition-all duration-1000" style="width: {{ daily_log.total_score|default:0 }}%;"></div>
+            </div>
+        </div>
+
+        <div class="glass-card p-6 flex flex-col border-l-4 border-emerald-500 bg-slate-900/50">
+            <p class="text-slate-400 text-[10px] font-black uppercase tracking-widest mb-1">Goals Completed</p>
+            <h3 class="text-4xl font-black text-emerald-500">{{ daily_log.goals_completed|default:0 }}/{{ daily_log.total_goals|default:0 }}</h3>
+        </div>
+
+        <div class="glass-card p-6 flex flex-col border-l-4 border-violet-500 bg-slate-900/50">
+            <p class="text-slate-400 text-[10px] font-black uppercase tracking-widest mb-1">Lectures Logged</p>
+            <h3 class="text-4xl font-black text-violet-500">{{ attendance.count }}</h3>
+        </div>
+    </div>
+
+    <!-- Details Grid -->
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+        <!-- Missions Details -->
+        <div class="glass-card p-8 bg-slate-900 border border-slate-800">
+            <h2 class="text-xl font-black text-white mb-8 flex items-center space-x-3">
+                <i class="fa-solid fa-list-check text-indigo-500"></i>
+                <span>Daily Missions</span>
+            </h2>
+            
+            <div class="space-y-4">
+                {% for glog in goal_logs %}
+                <div class="p-5 flex items-center justify-between bg-slate-800/20 rounded-2xl border border-slate-800/50">
+                    <div class="flex items-center space-x-5">
+                        <div class="w-12 h-12 rounded-xl bg-slate-800 flex items-center justify-center text-xl">
+                            {% if glog.goal.category == 'gym' %}<i class="fa-solid fa-dumbbell text-amber-500"></i>
+                            {% elif glog.goal.category == 'lecture' %}<i class="fa-solid fa-graduation-cap text-blue-500"></i>
+                            {% elif glog.goal.category == 'coding' %}<i class="fa-solid fa-code text-emerald-500"></i>
+                            {% else %}<i class="fa-solid fa-star text-fuchsia-500"></i>{% endif %}
+                        </div>
+                        <div>
+                            <h4 class="font-bold text-white">{{ glog.goal.title }}</h4>
+                            <p class="text-[10px] text-slate-500 font-bold uppercase">{{ glog.goal.get_category_display }}</p>
+                        </div>
+                    </div>
+                    <div>
+                        {% if glog.is_completed %}
+                            <span class="px-4 py-1.5 bg-emerald-500/10 text-emerald-500 text-[10px] font-black rounded-full uppercase border border-emerald-500/20">Completed</span>
+                        {% else %}
+                            <span class="px-4 py-1.5 bg-red-500/10 text-red-400 text-[10px] font-black rounded-full uppercase border border-red-500/20">Missed</span>
+                        {% endif %}
+                    </div>
+                </div>
+                {% empty %}
+                <div class="text-center py-12 text-slate-600">
+                    <p class="italic text-sm">No goal data found for this date.</p>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+
+        <!-- Attendance Proofs -->
+        <div class="glass-card p-8 bg-slate-900 border border-slate-800">
+            <h2 class="text-xl font-black text-white mb-8 flex items-center space-x-3">
+                <i class="fa-solid fa-building-columns text-indigo-500"></i>
+                <span>Lecture Verification</span>
+            </h2>
+            
+            <div class="space-y-4">
+                {% for item in attendance %}
+                <div class="p-6 bg-slate-800/20 rounded-3xl border border-slate-800/50">
+                    <div class="flex items-center justify-between mb-4">
+                        <div class="flex items-center space-x-3">
+                            <div class="w-10 h-10 rounded-xl bg-indigo-500/10 text-indigo-400 flex items-center justify-center">
+                                <i class="fa-solid fa-check"></i>
+                            </div>
+                            <div>
+                                <h4 class="font-bold text-white text-lg">{{ item.lecture_name }}</h4>
+                                <p class="text-[10px] text-slate-500 font-black uppercase">{{ item.timestamp|time:"H:i" }} Mark</p>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    {% if item.proof_image %}
+                    <div class="mt-4 rounded-2xl overflow-hidden border border-slate-700 shadow-lg">
+                        <img src="{{ item.proof_image.url }}" alt="Proof" class="w-full h-auto object-cover max-h-64 object-center">
+                    </div>
+                    {% endif %}
+                    
+                    {% if item.notes %}
+                    <div class="mt-4 p-4 bg-slate-900/50 rounded-xl border-l-2 border-slate-700 italic text-slate-400 text-sm">
+                        "{{ item.notes }}"
+                    </div>
+                    {% endif %}
+                </div>
+                {% empty %}
+                <div class="text-center py-12 text-slate-600">
+                    <p class="italic text-sm">No attendance records found for this date.</p>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

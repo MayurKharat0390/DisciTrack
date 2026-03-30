@@ -42,15 +42,18 @@
             </thead>
             <tbody class="text-sm text-slate-300">
                 {% for log in all_logs %}
-                <tr class="border-t border-slate-800 hover:bg-slate-800/10 transition-colors group">
+                <tr onclick="window.location='{% url 'day_detail' log.date|date:'Y-m-d' %}'" class="border-t border-slate-800 hover:bg-slate-800/10 cursor-pointer transition-colors group">
                     <td class="p-6">
-                        <h4 class="font-bold text-white">{{ log.date|date:"D, M d, Y" }}</h4>
-                        <p class="text-[10px] text-slate-500">Streak: {{ log.streak_count }} Days</p>
+                        <div class="flex items-center space-x-3">
+                            <i class="fa-solid fa-chevron-right text-[8px] text-slate-700 group-hover:text-indigo-500 transition-colors"></i>
+                            <h4 class="font-bold text-white">{{ log.date|date:"D, M d, Y" }}</h4>
+                        </div>
+                        <p class="text-[10px] text-slate-500 ml-5">Streak: {{ log.streak_count }} Days</p>
                     </td>
                     <td class="p-6">
                         <div class="flex items-center space-x-3">
                             <div class="flex-1 w-24 bg-slate-800 h-2 rounded-full overflow-hidden">
-                                <div class="bg-indigo-500 h-full" style="width: {% if log.total_goals > 0 %}{{ log.goals_completed|add:0|divisibleby:log.total_goals|yesno:'100,0' }}{% else %}100{% endif %}%"></div>
+                                <div class="bg-indigo-500 h-full" style="width: {% if log.total_goals > 0 %}{% widthratio log.goals_completed log.total_goals 100 %}{% else %}0{% endif %}%"></div>
                             </div>
                             <span class="text-xs font-bold text-slate-500">{{ log.goals_completed }}/{{ log.total_goals }}</span>
                         </div>

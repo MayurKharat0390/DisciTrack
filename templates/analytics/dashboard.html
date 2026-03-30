@@ -129,8 +129,8 @@
                     <div class="flex space-x-1" id="heatmap-container">
                         <div class="grid grid-rows-7 grid-flow-col gap-1">
                             {% for day in heatmap_data %}
-                                <div class="w-3 h-3 rounded-sm heatmap-cell level-{{ day.level }} cursor-pointer transition-colors" 
-                                     title="{{ day.date|date:'M d, Y' }}: {{ day.score|floatformat:1 }}%"></div>
+                                <a href="{% url 'day_detail' day.date|date:'Y-m-d' %}" class="block w-3 h-3 rounded-sm heatmap-cell level-{{ day.level }} cursor-pointer transition-colors" 
+                                   title="{{ day.date|date:'M d, Y' }}: {{ day.score|floatformat:1 }}%"></a>
                             {% endfor %}
                         </div>
                     </div>
